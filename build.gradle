@@ -1,0 +1,69 @@
+buildscript {
+    repositories {
+        maven { url "https://files.minecraftforge.net/maven" }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "3.+", changing: true
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle"
+apply plugin: "eclipse"
+
+group = "com.terraforged"
+version = "${mod_version}-mc${mc_version}"
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
+
+minecraft {
+    mappings channel: mcp_channel, version: mcp_version
+    runs {
+        client {
+            workingDirectory project.file("client")
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            property "forge.logging.console.level", "debug"
+            jvmArgs "-Xmx8G", "-Xms6G"
+            mods {
+                test {
+                    source sourceSets.test
+                }
+            }
+        }
+        server {
+            workingDirectory project.file("server")
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            property "forge.logging.console.level", "debug"
+            jvmArgs "-Xmx8G", "-Xms6G"
+            mods {
+                test {
+                    source sourceSets.test
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = "deobf"
+}
+
+jar {
+    dependsOn(deobfJar)
+    manifest {
+        attributes([
+                "Specification-Title"     : "FeatureManager",
+                "Specification-Vendor"    : "FeatureManager",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "FeatureManager",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
