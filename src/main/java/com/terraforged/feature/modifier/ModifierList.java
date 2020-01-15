@@ -32,6 +32,9 @@ public class ModifierList {
     }
 
     public void add(FeatureMatcher matcher, FeatureTransformer transformer) {
+        if (transformer == FeatureTransformer.NONE) {
+            return;
+        }
         if (transformers.isEmpty()) {
             transformers = new ArrayList<>();
         }

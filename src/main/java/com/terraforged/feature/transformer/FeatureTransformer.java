@@ -9,11 +9,10 @@ import java.util.function.Function;
 
 public interface FeatureTransformer extends Function<ConfiguredFeature<?, ?>, ConfiguredFeature<?, ?>> {
 
-    ConfiguredFeature<?, ?> transform(ConfiguredFeature<?, ?> feature);
+    FeatureTransformer NONE = FeatureTransformer.builder().build();
 
-    default ConfiguredFeature<?, ?> apply(ConfiguredFeature<?, ?> feature) {
-        return transform(feature);
-    }
+    @Override
+    ConfiguredFeature<?, ?> apply(ConfiguredFeature<?, ?> feature);
 
     static FeatureTransformer of(ConfiguredFeature<?, ?> feature) {
         return f -> feature;
@@ -23,7 +22,20 @@ public interface FeatureTransformer extends Function<ConfiguredFeature<?, ?>, Co
         return of(feature.func_225566_b_(config));
     }
 
+    static <T> FeatureTransformer replace(T find, T replace) {
+        if (find instanceof String) {
+            return builder().value((String) find, (String) replace).build();
+        }
+        if (find instanceof Number) {
+            return builder().value((Number) find, (Number) replace).build();
+        }
+        if (find instanceof Boolean) {
+            return builder().value((Boolean) find, (Boolean) replace).build();
+        }
+        return NONE;
+    }
+
     static JsonTransformer.Builder builder() {
-        return new JsonTransformer.Builder();
+        return JsonTransformer.builder();
     }
 }

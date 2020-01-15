@@ -1,8 +1,8 @@
 package com.terraforged.feature.transformer.json;
 
 import com.google.gson.*;
-import com.terraforged.feature.transformer.FeatureTransformer;
 import com.terraforged.feature.FeatureJsonCache;
+import com.terraforged.feature.transformer.FeatureTransformer;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 import java.util.Collections;
@@ -22,12 +22,12 @@ public class JsonTransformer implements FeatureTransformer {
     }
 
     @Override
-    public ConfiguredFeature<?, ?> transform(ConfiguredFeature<?, ?> feature) {
+    public ConfiguredFeature<?, ?> apply(ConfiguredFeature<?, ?> feature) {
         JsonElement element = FeatureJsonCache.getInstance().getJson(feature);
         if (element == JsonNull.INSTANCE) {
             return feature;
         } else {
-            return FeatureJsonCache.deserialize(element).orElse(feature);
+            return FeatureJsonCache.deserialize(transform(element)).orElse(feature);
         }
     }
 
@@ -51,7 +51,7 @@ public class JsonTransformer implements FeatureTransformer {
     private JsonArray transform(JsonArray source) {
         JsonArray dest = new JsonArray();
         for (JsonElement element : source) {
-            dest.add(element);
+            dest.add(transform(element));
         }
         return dest;
     }
@@ -101,11 +101,7 @@ public class JsonTransformer implements FeatureTransformer {
             return value(new JsonPrimitive(find), new JsonPrimitive(replace));
         }
 
-        public Builder value(boolean find, Number replace) {
-            return value(new JsonPrimitive(find), new JsonPrimitive(replace));
-        }
-
-        public Builder value(boolean find, String replace) {
+        public Builder value(Number find, Number replace) {
             return value(new JsonPrimitive(find), new JsonPrimitive(replace));
         }
 

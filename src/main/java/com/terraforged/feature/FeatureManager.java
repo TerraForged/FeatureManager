@@ -3,7 +3,6 @@ package com.terraforged.feature;
 import com.terraforged.feature.biome.BiomeFeature;
 import com.terraforged.feature.biome.BiomeFeatures;
 import com.terraforged.feature.event.FeatureInitEvent;
-import com.terraforged.feature.gen.FeatureDecorator;
 import com.terraforged.feature.modifier.FeatureModifierLoader;
 import com.terraforged.feature.modifier.FeatureModifiers;
 import com.terraforged.feature.predicate.FeaturePredicate;
@@ -11,6 +10,7 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.BusBuilder;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -39,8 +39,8 @@ public class FeatureManager implements FeatureDecorator {
 
     public static FeatureManager create(WorldType worldType) {
         FeatureModifiers modifiers = FeatureModifierLoader.load();
-        FeatureManager.BUS.post(new FeatureInitEvent.Predicate(worldType, modifiers));
-        FeatureManager.BUS.post(new FeatureInitEvent.Transformer(worldType, modifiers));
+        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Predicate(worldType, modifiers));
+        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Transformer(worldType, modifiers));
         Map<Biome, BiomeFeatures> biomes = new HashMap<>();
         for (Biome biome : ForgeRegistries.BIOMES) {
             biomes.put(biome, compute(biome, modifiers));

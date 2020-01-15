@@ -1,34 +1,48 @@
 package com.terraforged.feature.matcher;
 
 import com.terraforged.feature.matcher.json.JsonMatcher;
-import com.terraforged.feature.transformer.FeatureTransformer;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
-public interface FeatureMatcher {
+import java.util.function.Predicate;
+
+public interface FeatureMatcher extends Predicate<ConfiguredFeature<?, ?>> {
 
     FeatureMatcher ANY = c -> true;
 
+    @Override
     boolean test(ConfiguredFeature<?, ?> feature);
 
-    default FeatureTransformer replace(ConfiguredFeature<?, ?> replacement) {
-        return feature -> {
-            if (test(feature)) {
-                return replacement;
-            }
-            return feature;
-        };
+    /**
+     * Create a FeatureMatcher that matches ConfiguredFeatures that contain the provided arg
+     */
+    static FeatureMatcher of(Object arg) {
+        return and(arg);
     }
 
-    static FeatureMatcher of(Object... args) {
+    /**
+     * Create a FeatureMatcher that matches ConfiguredFeatures that contain ANY of the provided args
+     */
+    static FeatureMatcher or(Object... args) {
+        if (args.length == 0) {
+            return FeatureMatcher.ANY;
+        }
+        JsonMatcher.Builder builder = builder();
+        for (Object o : args) {
+            builder.or(o);
+        }
+        return builder.build();
+    }
+
+    /**
+     * Create a FeatureMatcher that matches ConfiguredFeatures that contain ALL of the provided args
+     */
+    static FeatureMatcher and(Object... args) {
+        if (args.length == 0) {
+            return FeatureMatcher.ANY;
+        }
         JsonMatcher.Builder builder = builder();
         for (Object arg : args) {
-            if (arg instanceof Boolean) {
-                builder.and((Boolean) arg);
-            } else if (arg instanceof Number) {
-                builder.and((Number) arg);
-            } else if (arg != null) {
-                builder.and(arg.toString());
-            }
+            builder.and(arg);
         }
         return builder.build();
     }

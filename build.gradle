@@ -16,27 +16,36 @@ group = "com.terraforged"
 version = "${mod_version}-mc${mc_version}"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
 
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+}
+
 minecraft {
     mappings channel: mcp_channel, version: mcp_version
     runs {
         client {
-            workingDirectory project.file("client")
+            workingDirectory project.file("run/client")
             property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
             property "forge.logging.console.level", "debug"
             jvmArgs "-Xmx8G", "-Xms6G"
             mods {
-                test {
+                mod {
                     source sourceSets.test
                 }
             }
         }
         server {
-            workingDirectory project.file("server")
+            workingDirectory project.file("run/server")
             property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
             property "forge.logging.console.level", "debug"
             jvmArgs "-Xmx8G", "-Xms6G"
             mods {
-                test {
+                mod {
                     source sourceSets.test
                 }
             }
@@ -44,13 +53,18 @@ minecraft {
     }
 }
 
-dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+task prepareRunClasses(type: Copy) {
+    from("$buildDir/classes/java/main")
+    into("$buildDir/classes/java/test")
 }
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = "deobf"
+}
+
+testClasses {
+    dependsOn(prepareRunClasses)
 }
 
 jar {

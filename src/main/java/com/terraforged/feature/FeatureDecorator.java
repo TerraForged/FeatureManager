@@ -1,6 +1,5 @@
-package com.terraforged.feature.gen;
+package com.terraforged.feature;
 
-import com.terraforged.feature.FeatureManager;
 import com.terraforged.feature.biome.BiomeFeature;
 import com.terraforged.feature.biome.BiomeFeatures;
 import net.minecraft.util.SharedSeedRandom;

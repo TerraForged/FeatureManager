@@ -3,10 +3,13 @@ package com.terraforged.feature.predicate;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
 
-public interface FeaturePredicate {
+import java.util.function.BiPredicate;
 
-    FeaturePredicate ALLOW = (c, b) -> true;
-    FeaturePredicate BLOCK = (c, b) -> true;
+public interface FeaturePredicate extends BiPredicate<IChunk, Biome> {
 
+    FeaturePredicate NONE = (c, b) -> true;
+    FeaturePredicate DENY = (c, b) -> true;
+
+    @Override
     boolean test(IChunk chunk, Biome biome);
 }

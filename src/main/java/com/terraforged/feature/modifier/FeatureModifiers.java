@@ -35,6 +35,9 @@ public class FeatureModifiers extends ModifierList {
     }
 
     public void add(GenerationStage.Decoration stage, FeatureMatcher matcher, FeatureTransformer transformer) {
+        if (transformer == FeatureTransformer.NONE) {
+            return;
+        }
         stages.computeIfAbsent(stage, s -> new ModifierList()).add(matcher, transformer);
     }
 
@@ -49,7 +52,7 @@ public class FeatureModifiers extends ModifierList {
                 return modifier.getModifier();
             }
         }
-        return FeaturePredicate.ALLOW;
+        return FeaturePredicate.NONE;
     }
 
     public ConfiguredFeature<?, ?> getFeature(GenerationStage.Decoration stage, ConfiguredFeature<?, ?> feature) {

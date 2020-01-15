@@ -20,6 +20,10 @@ public class FeatureJsonCache {
 
     }
 
+    public void clear() {
+        cache.clear();
+    }
+
     public JsonElement getJson(ConfiguredFeature<?, ?> feature) {
         return cache.computeIfAbsent(feature, FeatureJsonCache::serialize);
     }

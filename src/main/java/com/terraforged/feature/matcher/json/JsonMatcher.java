@@ -70,7 +70,20 @@ public class JsonMatcher implements FeatureMatcher {
         private List<Rule> rules = Collections.emptyList();
         private List<JsonPrimitive> values = Collections.emptyList();
 
-        public Builder and(boolean value) {
+        public Builder and(Object value) {
+            if (value instanceof String) {
+                return and((String) value);
+            }
+            if (value instanceof Number) {
+                return and((Number) value);
+            }
+            if (value instanceof Boolean) {
+                return and((Boolean) value);
+            }
+            return this;
+        }
+
+        public Builder and(Boolean value) {
             return and(new JsonPrimitive(value));
         }
 
@@ -90,7 +103,20 @@ public class JsonMatcher implements FeatureMatcher {
             return this;
         }
 
-        public Builder or(boolean value) {
+        public Builder or(Object value) {
+            if (value instanceof String) {
+                return or((String) value);
+            }
+            if (value instanceof Number) {
+                return or((Number) value);
+            }
+            if (value instanceof Boolean) {
+                return or((Boolean) value);
+            }
+            return this;
+        }
+
+        public Builder or(Boolean value) {
             return or(new JsonPrimitive(value));
         }
 
