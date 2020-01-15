@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FeatureManager implements FeatureDecorator {
-    
+
     private final Map<Biome, BiomeFeatures> biomes;
 
     public FeatureManager(Map<Biome, BiomeFeatures> biomes) {
