@@ -6,31 +6,9 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-public class FeatureJsonCache {
-
-    private static final FeatureJsonCache instance = new FeatureJsonCache();
-
-    private final Map<ConfiguredFeature<?, ?>, JsonElement> cache = new HashMap<>();
-
-    private FeatureJsonCache() {
-
-    }
-
-    public void clear() {
-        cache.clear();
-    }
-
-    public JsonElement getJson(ConfiguredFeature<?, ?> feature) {
-        return cache.computeIfAbsent(feature, FeatureJsonCache::serialize);
-    }
-
-    public static FeatureJsonCache getInstance() {
-        return instance;
-    }
+public class FeatureSerializer {
 
     public static JsonElement serialize(ConfiguredFeature<?, ?> feature) {
         try {

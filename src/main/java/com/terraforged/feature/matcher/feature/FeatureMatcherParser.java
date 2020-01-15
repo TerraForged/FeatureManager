@@ -26,7 +26,7 @@ public class FeatureMatcherParser {
         }
 
         if (element.isJsonArray()) {
-            JsonMatcher.Builder builder = FeatureMatcher.builder();
+            FeatureMatcher.Builder builder = FeatureMatcher.builder();
             for (JsonElement e : element.getAsJsonArray()) {
                 if (e.isJsonPrimitive()) {
                     Object arg = parseArg(e.getAsJsonPrimitive());
@@ -49,7 +49,7 @@ public class FeatureMatcherParser {
         return Optional.empty();
     }
 
-    private static boolean parseRule(JsonArray array, JsonMatcher.Builder builder) {
+    private static boolean parseRule(JsonArray array, FeatureMatcher.Builder builder) {
         for (JsonElement element : array) {
             if (!element.isJsonPrimitive()) {
                 return false;

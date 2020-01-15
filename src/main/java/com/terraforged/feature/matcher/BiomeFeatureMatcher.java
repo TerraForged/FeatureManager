@@ -1,13 +1,13 @@
 package com.terraforged.feature.matcher;
 
+import com.google.gson.JsonElement;
 import com.terraforged.feature.matcher.biome.BiomeMatcher;
 import com.terraforged.feature.matcher.feature.FeatureMatcher;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 import java.util.function.BiPredicate;
 
-public class BiomeFeatureMatcher implements BiPredicate<Biome, ConfiguredFeature<?, ?>> {
+public class BiomeFeatureMatcher implements BiPredicate<Biome, JsonElement> {
 
     public static final BiomeFeatureMatcher ANY = new BiomeFeatureMatcher(BiomeMatcher.ANY, FeatureMatcher.ANY);
 
@@ -20,7 +20,7 @@ public class BiomeFeatureMatcher implements BiPredicate<Biome, ConfiguredFeature
     }
 
     @Override
-    public boolean test(Biome biome, ConfiguredFeature<?, ?> feature) {
+    public boolean test(Biome biome, JsonElement feature) {
         return getBiomeMatcher().test(biome) && getFeatureMatcher().test(feature);
     }
 

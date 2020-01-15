@@ -9,6 +9,7 @@ import com.terraforged.feature.matcher.biome.BiomeMatcher;
 import com.terraforged.feature.matcher.biome.BiomeMatcherParser;
 import com.terraforged.feature.matcher.feature.FeatureMatcher;
 import com.terraforged.feature.matcher.feature.FeatureMatcherParser;
+import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
 import com.terraforged.feature.transformer.FeatureTransformerParser;
 import net.minecraft.resources.IResource;
@@ -65,16 +66,23 @@ public class FeatureModifierLoader {
             return false;
         }
 
-        Optional<FeatureTransformer> transformer = FeatureTransformerParser.parse(root);
-        if (!transformer.isPresent()) {
-            FeatureManager.LOG.error(FeatureManager.LOAD, "Invalid FeatureTransformer");
-            return false;
+        Optional<FeatureReplacer> replacer = FeatureTransformerParser.parseReplacer(root);
+        if (replacer.isPresent()) {
+            BiomeFeatureMatcher biomeFeatureMatcher = new BiomeFeatureMatcher(biome.get(), matcher.get());
+            modifiers.getReplacers().add(biomeFeatureMatcher, replacer.get());
+            return true;
         }
 
-        BiomeFeatureMatcher biomeFeatureMatcher = new BiomeFeatureMatcher(biome.get(), matcher.get());
-        FeatureTransformer featureTransformer = transformer.get();
-        modifiers.add(biomeFeatureMatcher, featureTransformer);
-        return true;
+        Optional<FeatureTransformer> transformer = FeatureTransformerParser.parseTransformer(root);
+        if (transformer.isPresent()) {
+            BiomeFeatureMatcher biomeFeatureMatcher = new BiomeFeatureMatcher(biome.get(), matcher.get());
+            modifiers.getTransformers().add(biomeFeatureMatcher, transformer.get());
+            return true;
+        }
+
+        FeatureManager.LOG.error(FeatureManager.LOAD, "Invalid Replacer/Transformer");
+
+        return false;
     }
 
     private static IResourceManager getResourceManager() {

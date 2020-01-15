@@ -5,7 +5,6 @@ import com.terraforged.feature.biome.BiomeFeatures;
 import com.terraforged.feature.event.FeatureInitEvent;
 import com.terraforged.feature.modifier.FeatureModifierLoader;
 import com.terraforged.feature.modifier.FeatureModifiers;
-import com.terraforged.feature.predicate.FeaturePredicate;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
@@ -47,13 +46,15 @@ public class FeatureManager implements FeatureDecorator {
         LOG.debug(LOAD, "Loading feature configuration data");
         FeatureModifiers modifiers = FeatureModifierLoader.load();
 
-        LOG.debug(INIT, "Firing FeatureInitEvents");
-        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Predicate(worldType, modifiers));
-        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Transformer(worldType, modifiers));
+        LOG.debug(INIT, "Firing feature init events");
+        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Predicate(worldType, modifiers.getPredicates()));
+        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Replacer(worldType, modifiers.getReplacers()));
+        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Transformer(worldType, modifiers.getTransformers()));
 
         int predicates = modifiers.getPredicates().size();
+        int replacers = modifiers.getReplacers().size();
         int transformers = modifiers.getTransformers().size();
-        LOG.debug(INIT, "Predicates: {}, Transformers: {}", predicates, transformers);
+        LOG.debug(INIT, "Predicates: {}, Replacers: {}, Transformers: {}", predicates, replacers, transformers);
 
         LOG.debug(INIT, "Compiling biome feature lists");
         Map<Biome, BiomeFeatures> biomes = new HashMap<>();
@@ -68,9 +69,8 @@ public class FeatureManager implements FeatureDecorator {
         BiomeFeatures.Builder builder = BiomeFeatures.builder();
         for (GenerationStage.Decoration stage : GenerationStage.Decoration.values()) {
             for (ConfiguredFeature<?, ?> feature : biome.getFeatures(stage)) {
-                FeaturePredicate predicate = modifiers.getPredicate(biome, feature);
-                ConfiguredFeature<?, ?> result = modifiers.getFeature(biome, feature);
-                builder.add(stage, new BiomeFeature(predicate, result));
+                BiomeFeature biomeFeature = modifiers.getFeature(biome, feature);
+                builder.add(stage, biomeFeature);
             }
         }
         return builder.build();
