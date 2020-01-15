@@ -1,0 +1,13 @@
+{
+  "biome": "*",
+  "match": [
+    [
+      "minecraft:birch_leaves",
+      "minecraft:birch_logs"
+    ]
+  ],
+  "transform": {
+    "minecraft:birch_leaves": "minecraft:emerald_block",
+    "minecraft:birch_logs": "minecraft:diamond_block"
+  }
+}

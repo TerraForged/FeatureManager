@@ -1,18 +1,18 @@
 package com.terraforged.feature.modifier;
 
-import com.terraforged.feature.matcher.FeatureMatcher;
+import com.terraforged.feature.matcher.BiomeFeatureMatcher;
 
 public class Modifier<T> {
 
-    private final FeatureMatcher matcher;
+    private final BiomeFeatureMatcher matcher;
     private final T modifier;
 
-    public Modifier(FeatureMatcher matcher, T modifier) {
+    public Modifier(BiomeFeatureMatcher matcher, T modifier) {
         this.matcher = matcher;
         this.modifier = modifier;
     }
 
-    public FeatureMatcher getMatcher() {
+    public BiomeFeatureMatcher getMatcher() {
         return matcher;
     }
 

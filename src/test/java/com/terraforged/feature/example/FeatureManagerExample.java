@@ -1,7 +1,7 @@
 package com.terraforged.feature.example;
 
 import com.terraforged.feature.event.FeatureInitEvent;
-import com.terraforged.feature.matcher.FeatureMatcher;
+import com.terraforged.feature.matcher.feature.FeatureMatcher;
 import com.terraforged.feature.transformer.FeatureTransformer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

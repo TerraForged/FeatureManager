@@ -12,11 +12,19 @@ import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class FeatureManager implements FeatureDecorator {
+
+    public static final Logger LOG = LogManager.getLogger("FeatureManager");
+    public static final Marker INIT = MarkerManager.getMarker("INIT");
+    public static final Marker LOAD = MarkerManager.getMarker("LOAD");
 
     private final Map<Biome, BiomeFeatures> biomes;
 
@@ -34,13 +42,25 @@ public class FeatureManager implements FeatureDecorator {
     }
 
     public static FeatureManager create(WorldType worldType) {
+        LOG.debug(INIT, "Creating FeatureManager for WorldType: {}", worldType.getName());
+
+        LOG.debug(LOAD, "Loading feature configuration data");
         FeatureModifiers modifiers = FeatureModifierLoader.load();
+
+        LOG.debug(INIT, "Firing FeatureInitEvents");
         MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Predicate(worldType, modifiers));
         MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Transformer(worldType, modifiers));
+
+        int predicates = modifiers.getPredicates().size();
+        int transformers = modifiers.getTransformers().size();
+        LOG.debug(INIT, "Predicates: {}, Transformers: {}", predicates, transformers);
+
+        LOG.debug(INIT, "Compiling biome feature lists");
         Map<Biome, BiomeFeatures> biomes = new HashMap<>();
         for (Biome biome : ForgeRegistries.BIOMES) {
             biomes.put(biome, compute(biome, modifiers));
         }
+
         return new FeatureManager(biomes);
     }
 
@@ -48,8 +68,8 @@ public class FeatureManager implements FeatureDecorator {
         BiomeFeatures.Builder builder = BiomeFeatures.builder();
         for (GenerationStage.Decoration stage : GenerationStage.Decoration.values()) {
             for (ConfiguredFeature<?, ?> feature : biome.getFeatures(stage)) {
-                FeaturePredicate predicate = modifiers.getPredicate(stage, feature);
-                ConfiguredFeature<?, ?> result = modifiers.getFeature(stage, feature);
+                FeaturePredicate predicate = modifiers.getPredicate(biome, feature);
+                ConfiguredFeature<?, ?> result = modifiers.getFeature(biome, feature);
                 builder.add(stage, new BiomeFeature(predicate, result));
             }
         }

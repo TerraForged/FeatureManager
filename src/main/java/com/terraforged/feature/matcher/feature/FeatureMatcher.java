@@ -1,6 +1,5 @@
-package com.terraforged.feature.matcher;
+package com.terraforged.feature.matcher.feature;
 
-import com.terraforged.feature.matcher.json.JsonMatcher;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 import java.util.function.Predicate;

@@ -1,6 +1,5 @@
 package com.terraforged.feature.transformer;
 
-import com.terraforged.feature.transformer.json.JsonTransformer;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;

@@ -1,11 +1,10 @@
 package com.terraforged.feature.event;
 
-import com.terraforged.feature.matcher.FeatureMatcher;
+import com.terraforged.feature.matcher.feature.FeatureMatcher;
 import com.terraforged.feature.modifier.FeatureModifiers;
 import com.terraforged.feature.predicate.FeaturePredicate;
 import com.terraforged.feature.transformer.FeatureTransformer;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.gen.GenerationStage;
 import net.minecraftforge.eventbus.api.Event;
 
 public abstract class FeatureInitEvent extends Event {
@@ -38,10 +37,6 @@ public abstract class FeatureInitEvent extends Event {
         public void register(FeatureMatcher matcher, FeaturePredicate predicate) {
             getModifiers().add(matcher, predicate);
         }
-
-        public void register(GenerationStage.Decoration stage, FeatureMatcher matcher, FeaturePredicate predicate) {
-            getModifiers().add(stage, matcher, predicate);
-        }
     }
 
     /**
@@ -55,10 +50,6 @@ public abstract class FeatureInitEvent extends Event {
 
         public void register(FeatureMatcher matcher, FeatureTransformer transformer) {
             getModifiers().add(matcher, transformer);
-        }
-
-        public void register(GenerationStage.Decoration stage, FeatureMatcher matcher, FeatureTransformer transformer) {
-            getModifiers().add(stage, matcher, transformer);
         }
     }
 }

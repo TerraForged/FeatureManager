@@ -1,4 +1,4 @@
-package com.terraforged.feature.matcher.json;
+package com.terraforged.feature.matcher.feature;
 
 import com.google.gson.JsonPrimitive;
 

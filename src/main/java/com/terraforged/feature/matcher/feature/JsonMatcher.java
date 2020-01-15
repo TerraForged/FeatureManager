@@ -1,10 +1,9 @@
-package com.terraforged.feature.matcher.json;
+package com.terraforged.feature.matcher.feature;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.terraforged.feature.FeatureJsonCache;
-import com.terraforged.feature.matcher.FeatureMatcher;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 import java.util.*;
@@ -129,10 +128,10 @@ public class JsonMatcher implements FeatureMatcher {
         }
 
         public Builder or(JsonPrimitive value) {
-            return drain().and(value);
+            return newRule().and(value);
         }
 
-        private Builder drain() {
+        public Builder newRule() {
             if (!values.isEmpty()) {
                 if (rules.isEmpty()) {
                     rules = new ArrayList<>();
@@ -144,7 +143,7 @@ public class JsonMatcher implements FeatureMatcher {
         }
 
         public JsonMatcher build() {
-            drain();
+            newRule();
             return new JsonMatcher(rules);
         }
     }

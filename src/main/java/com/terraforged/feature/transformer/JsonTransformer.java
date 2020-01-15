@@ -1,8 +1,7 @@
-package com.terraforged.feature.transformer.json;
+package com.terraforged.feature.transformer;
 
 import com.google.gson.*;
 import com.terraforged.feature.FeatureJsonCache;
-import com.terraforged.feature.transformer.FeatureTransformer;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 import java.util.Collections;
