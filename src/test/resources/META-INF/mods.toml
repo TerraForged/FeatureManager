@@ -1,8 +1,8 @@
 modLoader="javafml"
 loaderVersion="[25,)"
 [[mods]]
-    modId="feature_manager"
-    displayName="FeatureManager"
+    modId="example_mod"
+    displayName="Example Mod"
     version="0.0.1"
     authors="dags"
-    description="A tool for managing/modifying Biome features"
+    description="Example use of FeatureManager"
