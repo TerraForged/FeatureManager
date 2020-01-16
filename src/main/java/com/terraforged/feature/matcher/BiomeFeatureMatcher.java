@@ -7,7 +7,7 @@ import net.minecraft.world.biome.Biome;
 
 import java.util.function.BiPredicate;
 
-public class BiomeFeatureMatcher implements BiPredicate<Biome, JsonElement> {
+public class BiomeFeatureMatcher implements BiPredicate<Biome, JsonElement>, Comparable<BiomeFeatureMatcher> {
 
     public static final BiomeFeatureMatcher ANY = new BiomeFeatureMatcher(BiomeMatcher.ANY, FeatureMatcher.ANY);
 
@@ -30,5 +30,10 @@ public class BiomeFeatureMatcher implements BiPredicate<Biome, JsonElement> {
 
     public FeatureMatcher getFeatureMatcher() {
         return featureMatcher;
+    }
+
+    @Override
+    public int compareTo(BiomeFeatureMatcher o) {
+        return biomeMatcher.compareTo(o.biomeMatcher);
     }
 }

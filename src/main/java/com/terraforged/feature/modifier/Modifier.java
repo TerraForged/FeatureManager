@@ -2,7 +2,7 @@ package com.terraforged.feature.modifier;
 
 import com.terraforged.feature.matcher.BiomeFeatureMatcher;
 
-public class Modifier<T> {
+public class Modifier<T> implements Comparable<Modifier<T>> {
 
     private final BiomeFeatureMatcher matcher;
     private final T modifier;
@@ -18,5 +18,10 @@ public class Modifier<T> {
 
     public T getModifier() {
         return modifier;
+    }
+
+    @Override
+    public int compareTo(Modifier<T> o) {
+        return matcher.compareTo(o.matcher);
     }
 }

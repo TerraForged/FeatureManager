@@ -8,8 +8,9 @@ import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraftforge.eventbus.api.Event;
 
-public class FeatureModifiers {
+public class FeatureModifiers extends Event {
 
     private final ModifierList<FeatureReplacer> replacers = new ModifierList<>();
     private final ModifierList<FeaturePredicate> predicates = new ModifierList<>();
@@ -25,6 +26,13 @@ public class FeatureModifiers {
 
     public ModifierList<FeatureTransformer> getTransformers() {
         return transformers;
+    }
+
+    public void sort() {
+        replacers.sort();
+        predicates.sort();
+        transformers.sort();
+        ;
     }
 
     public BiomeFeature getFeature(Biome biome, ConfiguredFeature<?, ?> feature) {
@@ -50,10 +58,16 @@ public class FeatureModifiers {
             }
         }
 
+        boolean modified = false;
         for (Modifier<FeatureTransformer> modifier : transformers) {
             if (modifier.getMatcher().test(biome, element)) {
+                modified = true;
                 element = modifier.getModifier().apply(element);
             }
+        }
+
+        if (!modified) {
+            return feature;
         }
 
         return FeatureSerializer.deserialize(element).orElse(feature);

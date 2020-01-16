@@ -2,22 +2,46 @@ package com.terraforged.feature.matcher.biome;
 
 import net.minecraft.world.biome.Biome;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public interface BiomeMatcher extends Predicate<Biome> {
+public class BiomeMatcher implements Predicate<Biome>, Comparable<BiomeMatcher> {
 
-    BiomeMatcher ANY = b -> true;
+    public static final BiomeMatcher ANY = new BiomeMatcher(Collections.emptySet());
 
-    default BiomeMatcher or(BiomeMatcher other) {
-        return b -> test(b) || other.test(b);
+    private final Set<Biome> biomes;
+
+    private BiomeMatcher(Set<Biome> biomes) {
+        this.biomes = biomes;
     }
 
-    static BiomeMatcher of(Biome biome) {
-        return b -> b == biome;
+    @Override
+    public int compareTo(BiomeMatcher o) {
+        // reverse order so more biomes == tested first
+        return Integer.compare(o.biomes.size(), biomes.size());
     }
 
-    static BiomeMatcher of(Set<Biome> biomes) {
-        return biomes::contains;
+    @Override
+    public boolean test(Biome biome) {
+        return biomes.isEmpty() || biomes.contains(biome);
+    }
+
+    public BiomeMatcher or(BiomeMatcher other) {
+        Set<Biome> combined = new HashSet<>();
+        combined.addAll(biomes);
+        combined.addAll(other.biomes);
+        return new BiomeMatcher(combined);
+    }
+
+    ;
+
+    public static BiomeMatcher of(Biome biome) {
+        return new BiomeMatcher(Collections.singleton(biome));
+    }
+
+    public static BiomeMatcher of(Set<Biome> biomes) {
+        return new BiomeMatcher(biomes);
     }
 }

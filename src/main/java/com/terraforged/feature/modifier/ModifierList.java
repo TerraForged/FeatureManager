@@ -17,6 +17,10 @@ public class ModifierList<T> implements Iterable<Modifier<T>> {
         return list.size();
     }
 
+    public void sort() {
+        Collections.sort(list);
+    }
+
     @Override
     public Iterator<Modifier<T>> iterator() {
         return list.iterator();

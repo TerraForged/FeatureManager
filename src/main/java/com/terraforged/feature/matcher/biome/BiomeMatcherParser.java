@@ -14,8 +14,8 @@ import java.util.Set;
 public class BiomeMatcherParser {
 
     public static Optional<BiomeMatcher> parse(JsonObject root) {
-        if (root.has("biome")) {
-            return parse(root.get("biome"));
+        if (root.has("biomes")) {
+            return parse(root.get("biomes"));
         }
         return Optional.of(BiomeMatcher.ANY);
     }

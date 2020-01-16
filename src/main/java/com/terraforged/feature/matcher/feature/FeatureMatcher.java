@@ -1,7 +1,9 @@
 package com.terraforged.feature.matcher.feature;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -98,20 +100,31 @@ public class FeatureMatcher implements Predicate<JsonElement> {
         return new Builder();
     }
 
+    private static JsonElement arg(Object arg) {
+        if (arg instanceof String) {
+            return new JsonPrimitive((String) arg);
+        }
+        if (arg instanceof Number) {
+            return new JsonPrimitive((Number) arg);
+        }
+        if (arg instanceof Boolean) {
+            return new JsonPrimitive((Boolean) arg);
+        }
+        if (arg instanceof ForgeRegistryEntry) {
+            return new JsonPrimitive(((ForgeRegistryEntry<?>) arg).getRegistryName() + "");
+        }
+        return JsonNull.INSTANCE;
+    }
+
     public static class Builder {
 
         private List<Rule> rules = Collections.emptyList();
         private List<JsonPrimitive> values = Collections.emptyList();
 
         public Builder and(Object value) {
-            if (value instanceof String) {
-                return and((String) value);
-            }
-            if (value instanceof Number) {
-                return and((Number) value);
-            }
-            if (value instanceof Boolean) {
-                return and((Boolean) value);
+            JsonElement element = FeatureMatcher.arg(value);
+            if (element.isJsonPrimitive()) {
+                and(element.getAsJsonPrimitive());
             }
             return this;
         }
@@ -137,14 +150,9 @@ public class FeatureMatcher implements Predicate<JsonElement> {
         }
 
         public Builder or(Object value) {
-            if (value instanceof String) {
-                return or((String) value);
-            }
-            if (value instanceof Number) {
-                return or((Number) value);
-            }
-            if (value instanceof Boolean) {
-                return or((Boolean) value);
+            JsonElement element = FeatureMatcher.arg(value);
+            if (element.isJsonPrimitive()) {
+                or(element.getAsJsonPrimitive());
             }
             return this;
         }

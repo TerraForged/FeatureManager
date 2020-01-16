@@ -1,6 +1,6 @@
 package com.terraforged.feature.example;
 
-import com.terraforged.feature.event.FeatureInitEvent;
+import com.terraforged.feature.event.FeatureModifierEvent;
 import com.terraforged.feature.matcher.feature.FeatureMatcher;
 import com.terraforged.feature.transformer.FeatureTransformer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -21,10 +21,10 @@ public class FeatureManagerExample {
     public static class FeatureRegistrationListener {
 
         @SubscribeEvent
-        public static void register(FeatureInitEvent.Transformer event) {
+        public static void register(FeatureModifierEvent event) {
             if (event.getWorldType() == ExampleWorld.TYPE) {
                 System.out.println("REGISTERING TRANSFORMER");
-                event.register(
+                event.getTransformers().add(
                         // match any feature that uses oak_leaves & oak_log blocks (ie oak trees)
                         FeatureMatcher.and("minecraft:oak_leaves", "minecraft:oak_log"),
                         // replace any occurrence of "minecraft:oak_leaves" with "minecraft:gold_block"

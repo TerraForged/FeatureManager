@@ -2,14 +2,17 @@ package com.terraforged.feature;
 
 import com.terraforged.feature.biome.BiomeFeature;
 import com.terraforged.feature.biome.BiomeFeatures;
-import com.terraforged.feature.event.FeatureInitEvent;
+import com.terraforged.feature.event.FeatureModifierEvent;
 import com.terraforged.feature.modifier.FeatureModifierLoader;
 import com.terraforged.feature.modifier.FeatureModifiers;
-import net.minecraft.world.WorldType;
+import com.terraforged.feature.template.TemplateManager;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +26,6 @@ public class FeatureManager implements FeatureDecorator {
 
     public static final Logger LOG = LogManager.getLogger("FeatureManager");
     public static final Marker INIT = MarkerManager.getMarker("INIT");
-    public static final Marker LOAD = MarkerManager.getMarker("LOAD");
 
     private final Map<Biome, BiomeFeatures> biomes;
 
@@ -40,29 +42,37 @@ public class FeatureManager implements FeatureDecorator {
         return biomes.getOrDefault(biome, BiomeFeatures.NONE);
     }
 
-    public static FeatureManager create(WorldType worldType) {
-        LOG.debug(INIT, "Creating FeatureManager for WorldType: {}", worldType.getName());
-
-        LOG.debug(LOAD, "Loading feature configuration data");
+    public static FeatureManager create(IWorld world) {
         FeatureModifiers modifiers = FeatureModifierLoader.load();
+        return create(world, modifiers);
+    }
 
-        LOG.debug(INIT, "Firing feature init events");
-        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Predicate(worldType, modifiers.getPredicates()));
-        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Replacer(worldType, modifiers.getReplacers()));
-        MinecraftForge.EVENT_BUS.post(new FeatureInitEvent.Transformer(worldType, modifiers.getTransformers()));
+    public static FeatureManager create(IWorld world, FeatureModifiers modifiers) {
+        LOG.debug(INIT, "Initializing FeatureManager");
+
+        LOG.debug(INIT, " Firing init events");
+        MinecraftForge.EVENT_BUS.post(new FeatureModifierEvent(world, modifiers));
 
         int predicates = modifiers.getPredicates().size();
         int replacers = modifiers.getReplacers().size();
         int transformers = modifiers.getTransformers().size();
-        LOG.debug(INIT, "Predicates: {}, Replacers: {}, Transformers: {}", predicates, replacers, transformers);
+        LOG.debug(INIT, " Predicates: {}, Replacers: {}, Transformers: {}", predicates, replacers, transformers);
 
-        LOG.debug(INIT, "Compiling biome feature lists");
+        modifiers.sort();
+
+        LOG.debug(INIT, " Compiling biome feature lists");
         Map<Biome, BiomeFeatures> biomes = new HashMap<>();
         for (Biome biome : ForgeRegistries.BIOMES) {
-            biomes.put(biome, compute(biome, modifiers));
+            BiomeFeatures features = compute(biome, modifiers);
+            biomes.put(biome, features);
         }
 
+        LOG.debug(INIT, " Initialization complete");
         return new FeatureManager(biomes);
+    }
+
+    public static void registerTemplates(RegistryEvent.Register<Feature<?>> event) {
+        TemplateManager.register(event);
     }
 
     private static BiomeFeatures compute(Biome biome, FeatureModifiers modifiers) {

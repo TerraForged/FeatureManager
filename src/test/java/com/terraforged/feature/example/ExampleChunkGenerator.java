@@ -14,7 +14,7 @@ public class ExampleChunkGenerator extends OverworldChunkGenerator implements Fe
 
     public ExampleChunkGenerator(IWorld world, BiomeProvider biomeProvider, OverworldGenSettings settings) {
         super(world, biomeProvider, settings);
-        this.featureManager = FeatureManager.create(world.getWorld().getWorldType());
+        this.featureManager = FeatureManager.create(world.getWorld());
     }
 
     @Override

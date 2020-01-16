@@ -1,9 +1,8 @@
 package com.terraforged.feature.modifier;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.terraforged.feature.FeatureManager;
+import com.terraforged.feature.data.DataHelper;
 import com.terraforged.feature.matcher.BiomeFeatureMatcher;
 import com.terraforged.feature.matcher.biome.BiomeMatcher;
 import com.terraforged.feature.matcher.biome.BiomeMatcherParser;
@@ -12,57 +11,43 @@ import com.terraforged.feature.matcher.feature.FeatureMatcherParser;
 import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
 import com.terraforged.feature.transformer.FeatureTransformerParser;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class FeatureModifierLoader {
 
-    private static final Predicate<String> JSON_MATCHER = s -> s.endsWith(".json");
-    private static final JsonParser parser = new JsonParser();
+    public static final Marker LOAD = MarkerManager.getMarker("MODIFIERS");
 
     public static FeatureModifiers load() {
+        FeatureManager.LOG.debug(LOAD, "Loading feature configuration data");
+
         FeatureModifiers modifiers = new FeatureModifiers();
-        IResourceManager manager = getResourceManager();
-        Collection<ResourceLocation> locations = manager.getAllResourceLocations("features", JSON_MATCHER);
-        for (ResourceLocation location : locations) {
-            try (IResource resource = manager.getResource(location)) {
-                try (Reader reader = getResourceReader(resource)) {
-                    JsonElement element = parser.parse(reader);
-                    if (element.isJsonObject() && load(element.getAsJsonObject(), modifiers)) {
-                        FeatureManager.LOG.debug(FeatureManager.LOAD, "Loaded feature configuration: {}", location);
-                    } else {
-                        FeatureManager.LOG.error(FeatureManager.LOAD, "Failed to load feature configuration: {}", location);
-                    }
+        DataHelper.iterateJson("features", (location, element) -> {
+            FeatureManager.LOG.debug(LOAD, "Loading feature configuration: {}", location);
+            if (element.isJsonObject()) {
+                if (load(location, element.getAsJsonObject(), modifiers)) {
+                    return;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        }
+            FeatureManager.LOG.error(LOAD, " Failed to load feature configuration: {}", location);
+        });
+
         return modifiers;
     }
 
-    private static boolean load(JsonObject root, FeatureModifiers modifiers) {
+    private static boolean load(ResourceLocation location, JsonObject root, FeatureModifiers modifiers) {
         Optional<BiomeMatcher> biome = BiomeMatcherParser.parse(root);
         if (!biome.isPresent()) {
-            FeatureManager.LOG.error(FeatureManager.LOAD, "Invalid BiomeMatcher");
+            FeatureManager.LOG.error(LOAD, " Invalid BiomeMatcher in: {}", location);
             return false;
         }
 
         Optional<FeatureMatcher> matcher = FeatureMatcherParser.parse(root);
         if (!matcher.isPresent()) {
-            FeatureManager.LOG.error(FeatureManager.LOAD, "Invalid FeatureMatcher");
+            FeatureManager.LOG.error(LOAD, " Invalid FeatureMatcher in: {}", location);
             return false;
         }
 
@@ -80,17 +65,8 @@ public class FeatureModifierLoader {
             return true;
         }
 
-        FeatureManager.LOG.error(FeatureManager.LOAD, "Invalid Replacer/Transformer");
+        FeatureManager.LOG.error(LOAD, " Invalid Replacer/Transformer in: {}", location);
 
         return false;
-    }
-
-    private static IResourceManager getResourceManager() {
-        MinecraftServer server = LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-        return server.getResourceManager();
-    }
-
-    private static Reader getResourceReader(IResource resource) {
-        return new BufferedReader(new InputStreamReader(resource.getInputStream()));
     }
 }
