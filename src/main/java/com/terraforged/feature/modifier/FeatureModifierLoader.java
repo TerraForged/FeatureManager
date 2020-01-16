@@ -22,17 +22,17 @@ public class FeatureModifierLoader {
     public static final Marker LOAD = MarkerManager.getMarker("MODIFIERS");
 
     public static FeatureModifiers load() {
-        FeatureManager.LOG.debug(LOAD, "Loading feature configuration data");
+        FeatureManager.LOG.debug(LOAD, "Loading feature modifier configs");
 
         FeatureModifiers modifiers = new FeatureModifiers();
         DataHelper.iterateJson("features", (location, element) -> {
-            FeatureManager.LOG.debug(LOAD, "Loading feature configuration: {}", location);
             if (element.isJsonObject()) {
                 if (load(location, element.getAsJsonObject(), modifiers)) {
+                    FeatureManager.LOG.debug(LOAD, " Loaded modifier config: {}", location);
                     return;
                 }
             }
-            FeatureManager.LOG.error(LOAD, " Failed to load feature configuration: {}", location);
+            FeatureManager.LOG.error(LOAD, " Failed to load modifier config: {}", location);
         });
 
         return modifiers;
@@ -41,13 +41,13 @@ public class FeatureModifierLoader {
     private static boolean load(ResourceLocation location, JsonObject root, FeatureModifiers modifiers) {
         Optional<BiomeMatcher> biome = BiomeMatcherParser.parse(root);
         if (!biome.isPresent()) {
-            FeatureManager.LOG.error(LOAD, " Invalid BiomeMatcher in: {}", location);
+            FeatureManager.LOG.error(LOAD, "  Invalid BiomeMatcher in: {}", location);
             return false;
         }
 
         Optional<FeatureMatcher> matcher = FeatureMatcherParser.parse(root);
         if (!matcher.isPresent()) {
-            FeatureManager.LOG.error(LOAD, " Invalid FeatureMatcher in: {}", location);
+            FeatureManager.LOG.error(LOAD, "  Invalid FeatureMatcher in: {}", location);
             return false;
         }
 
@@ -65,7 +65,7 @@ public class FeatureModifierLoader {
             return true;
         }
 
-        FeatureManager.LOG.error(LOAD, " Invalid Replacer/Transformer in: {}", location);
+        FeatureManager.LOG.error(LOAD, "  Invalid Replacer/Transformer in: {}", location);
 
         return false;
     }

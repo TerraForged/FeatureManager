@@ -59,9 +59,9 @@ public class TemplateManager {
                 Optional<TemplateFeature> template = TemplateFeature.load(data);
                 if (template.isPresent()) {
                     list.add(template.get());
-                    FeatureManager.LOG.debug(marker, " Loaded template: {}", location);
+                    FeatureManager.LOG.debug(marker, "  Loaded template: {}", location);
                 } else {
-                    FeatureManager.LOG.error(marker, " Failed to load template: {}", location);
+                    FeatureManager.LOG.error(marker, "  Failed to load template: {}", location);
                 }
             });
         }
