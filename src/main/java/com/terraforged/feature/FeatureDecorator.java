@@ -39,11 +39,7 @@ public interface FeatureDecorator {
                 random.setFeatureSeed(decorationSeed, featureOrdinal++, stage.ordinal());
 
                 if (feature.getPredicate().test(chunk, biome)) {
-                    try {
-                        feature.getFeature().place(region, generator, random, pos);
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
+                    feature.getFeature().place(region, generator, random, pos);
                 }
             }
         }

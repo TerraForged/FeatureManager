@@ -37,18 +37,13 @@ public class FeatureModifiers extends Event {
 
     public BiomeFeature getFeature(Biome biome, ConfiguredFeature<?, ?> feature) {
         JsonElement element = FeatureSerializer.serialize(feature);
-        FeaturePredicate predicate = getPredicate(biome, element);
         ConfiguredFeature<?, ?> result = getFeature(biome, feature, element);
-        return new BiomeFeature(predicate, result);
-    }
-
-    private FeaturePredicate getPredicate(Biome biome, JsonElement element) {
-        for (Modifier<FeaturePredicate> modifier : predicates) {
-            if (modifier.getMatcher().test(biome, element)) {
-                return modifier.getModifier();
-            }
+        if (result != feature) {
+            // re-serialize if feature has been changed
+            element = FeatureSerializer.serialize(result);
         }
-        return FeaturePredicate.NONE;
+        FeaturePredicate predicate = getPredicate(biome, element);
+        return new BiomeFeature(predicate, result);
     }
 
     private ConfiguredFeature<?, ?> getFeature(Biome biome, ConfiguredFeature<?, ?> feature, JsonElement element) {
@@ -71,5 +66,14 @@ public class FeatureModifiers extends Event {
         }
 
         return FeatureSerializer.deserialize(element).orElse(feature);
+    }
+
+    private FeaturePredicate getPredicate(Biome biome, JsonElement element) {
+        for (Modifier<FeaturePredicate> modifier : predicates) {
+            if (modifier.getMatcher().test(biome, element)) {
+                return modifier.getModifier();
+            }
+        }
+        return FeaturePredicate.PASS;
     }
 }

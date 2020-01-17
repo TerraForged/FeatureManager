@@ -1,6 +1,8 @@
 package com.terraforged.feature.template.type;
 
+import com.terraforged.feature.matcher.feature.FeatureMatcher;
 import com.terraforged.feature.template.placement.Placement;
+import net.minecraft.world.gen.feature.Feature;
 
 public class FeatureType {
 
@@ -23,5 +25,13 @@ public class FeatureType {
     @Override
     public String toString() {
         return name;
+    }
+
+    public FeatureMatcher matcher() {
+        FeatureMatcher.Builder builder = FeatureMatcher.builder();
+        for (Feature<?> feature : FeatureTypes.getFeatures(this)) {
+            builder.or(feature);
+        }
+        return builder.build();
     }
 }

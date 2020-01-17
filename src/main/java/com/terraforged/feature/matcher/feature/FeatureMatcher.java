@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 public class FeatureMatcher implements Predicate<JsonElement> {
 
     public static final FeatureMatcher ANY = new FeatureMatcher(Collections.emptyList());
+    public static final FeatureMatcher NONE = new FeatureMatcher(Collections.emptyList());
 
     private final List<Rule> rules;
 
@@ -28,8 +29,11 @@ public class FeatureMatcher implements Predicate<JsonElement> {
 
     @Override
     public boolean test(JsonElement element) {
-        if (rules.isEmpty()) {
+        if (this == ANY) {
             return true;
+        }
+        if (this == NONE) {
+            return false;
         }
         return test(element, new Search(rules));
     }
@@ -185,6 +189,9 @@ public class FeatureMatcher implements Predicate<JsonElement> {
         }
 
         public FeatureMatcher build() {
+            if (rules.isEmpty() && values.isEmpty()) {
+                return FeatureMatcher.NONE;
+            }
             newRule();
             return new FeatureMatcher(rules);
         }
