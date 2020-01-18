@@ -33,18 +33,21 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
 
     @Override
     public boolean place(IWorld world, ChunkGenerator<?> generator, Random rand, BlockPos origin, TemplateFeatureConfig config) {
+        Mirror mirror = getMirror(rand);
+        Rotation rotation = getRotation(rand);
+
         boolean placed = false;
-
-        final Mirror mirror = getMirror(rand);
-        final Rotation rotation = getRotation(rand);
-
         for (BlockInfo block : blocks) {
-            BlockState state = block.state;
+            BlockState state = block.state.rotate(rotation).mirror(mirror);
             if (isAir(state) && !config.pasteAir) {
                 continue;
             }
 
             BlockPos pos = Template.getTransformedPos(block.pos, mirror, rotation, BlockPos.ZERO).add(origin);
+            if (block.pos.getY() <= 0) {
+                placeBase(world, pos, state, config.baseDepth);
+            }
+
             if (!config.replaceSolid) {
                 BlockState current = world.getBlockState(pos);
                 if (current.isSolid()) {
@@ -53,10 +56,17 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
             }
 
             placed = true;
-            world.setBlockState(pos, state.rotate(rotation).mirror(mirror), 2);
+            world.setBlockState(pos, state, 2);
         }
 
         return placed;
+    }
+
+    private void placeBase(IWorld world, BlockPos pos, BlockState state, int depth) {
+        for (int dy = 0; dy < depth; dy++) {
+            pos = pos.down();
+            world.setBlockState(pos, state, 2);
+        }
     }
 
     private static boolean isAir(BlockState state) {

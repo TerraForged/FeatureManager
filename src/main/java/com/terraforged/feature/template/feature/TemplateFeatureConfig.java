@@ -11,6 +11,7 @@ public class TemplateFeatureConfig extends NoFeatureConfig {
 
     public final boolean pasteAir;
     public final boolean replaceSolid;
+    public int baseDepth = 0;
 
     public TemplateFeatureConfig(boolean pasteAir, boolean replaceSolid) {
         this.pasteAir = pasteAir;

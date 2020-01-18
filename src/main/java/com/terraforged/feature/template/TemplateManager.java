@@ -31,7 +31,7 @@ public class TemplateManager {
             for (TemplateConfig config : configs) {
                 FeatureManager.LOG.debug(marker, "Registering feature: {}", config.getRegistryName());
                 List<TemplateFeature> templates = loadTemplates(dataPack, config);
-                MultiTemplateFeature feature = new MultiTemplateFeature(config.getType(), config.getRegistryName(), templates);
+                MultiTemplateFeature feature = new MultiTemplateFeature(config, templates);
                 event.getRegistry().register(feature);
             }
         });

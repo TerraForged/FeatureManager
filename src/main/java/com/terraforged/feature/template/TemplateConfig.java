@@ -13,6 +13,7 @@ import java.util.Optional;
 public class TemplateConfig {
 
     private final String type;
+    private final int extendBase;
     private final ResourceLocation name;
     private final List<ResourceLocation> paths;
 
@@ -20,10 +21,15 @@ public class TemplateConfig {
         this.type = builder.type;
         this.name = builder.name;
         this.paths = builder.paths;
+        this.extendBase = builder.base;
     }
 
     public FeatureType getType() {
         return FeatureTypes.getType(type);
+    }
+
+    public int getBaseDepth() {
+        return extendBase;
     }
 
     public ResourceLocation getRegistryName() {
@@ -52,6 +58,10 @@ public class TemplateConfig {
             builder.type(root.get("type").getAsString());
         }
 
+        if (root.has("base")) {
+            builder.base(root.get("base").getAsInt());
+        }
+
         for (JsonElement path : root.getAsJsonArray("paths")) {
             builder.path(location.getNamespace(), path.getAsString());
         }
@@ -65,12 +75,18 @@ public class TemplateConfig {
 
     public static class Builder {
 
+        private int base;
         private String type;
         private ResourceLocation name;
         private List<ResourceLocation> paths = new ArrayList<>();
 
         public Builder type(String type) {
             this.type = type;
+            return this;
+        }
+
+        public Builder base(int depth) {
+            this.base = depth;
             return this;
         }
 
