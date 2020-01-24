@@ -10,13 +10,13 @@ public class SingleSurfaceBiome extends CachedPredicate {
 
     @Override
     public boolean doTest(IChunk chunk, Biome biome) {
-        BiomeContainer biomes = chunk.func_225549_i_();
+        BiomeContainer biomes = chunk.getBiomes();
         if (biomes == null) {
             return false;
         }
         for (int dz = 0; dz < 16; dz++) {
             for (int dx = 0; dx < 16; dx++) {
-                if (biomes.func_225526_b_(dx, 70, dz) != biome) {
+                if (biomes.getNoiseBiome(dx, 70, dz) != biome) {
                     return false;
                 }
             }

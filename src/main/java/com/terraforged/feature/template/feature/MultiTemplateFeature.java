@@ -9,20 +9,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
 
 import java.util.List;
 import java.util.Random;
 
-public class MultiTemplateFeature extends Feature<TemplateFeatureConfig> implements TypedFeature {
+public class MultiTemplateFeature extends Feature<NoFeatureConfig> implements TypedFeature {
 
     private final int baseDepth;
 
     private final FeatureType type;
     private final ResourceLocation name;
     private final List<TemplateFeature> templates;
+    private final TemplateFeatureConfig config = new TemplateFeatureConfig(false, false);
 
     public MultiTemplateFeature(TemplateConfig config, List<TemplateFeature> templates) {
-        super(TemplateFeatureConfig::deserialize);
+        super(NoFeatureConfig::deserialize);
         this.type = config.getType();
         this.name = config.getRegistryName();
         this.baseDepth = config.getBaseDepth();
@@ -37,12 +39,12 @@ public class MultiTemplateFeature extends Feature<TemplateFeatureConfig> impleme
     }
 
     @Override
-    public boolean place(IWorld world, ChunkGenerator<?> generator, Random rand, BlockPos pos, TemplateFeatureConfig config) {
+    public boolean place(IWorld world, ChunkGenerator<?> generator, Random rand, BlockPos pos, NoFeatureConfig config) {
         if (getType().getPlacement().canPlaceAt(world, pos)) {
             if (templates.size() > 0) {
                 Feature<TemplateFeatureConfig> feature = next(rand);
-                config.baseDepth = baseDepth;
-                return feature.place(world, generator, rand, pos, config);
+                this.config.baseDepth = baseDepth;
+                return feature.place(world, generator, rand, pos, this.config);
             }
         }
         return false;

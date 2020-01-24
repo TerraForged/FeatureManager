@@ -8,6 +8,6 @@ public abstract class TreePlacement extends AbstractTreeFeature<BaseTreeFeatureC
     public static final Placement PLACEMENT = (world, pos) -> isDirtOrGrassBlock(world, pos.down());
 
     private TreePlacement() {
-        super(BaseTreeFeatureConfig::func_227376_b_);
+        super(BaseTreeFeatureConfig::deserialize);
     }
 }

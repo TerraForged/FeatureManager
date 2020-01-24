@@ -26,7 +26,7 @@ public class DataPack {
     }
 
     public Collection<ResourceLocation> getAllResources(String path, Predicate<String> filenameMatcher) {
-        return pack.func_225637_a_(type, namespace, path, 8, filenameMatcher);
+        return pack.getAllResourceLocations(type, namespace, path, 8, filenameMatcher);
     }
 
     public InputStream getResource(ResourceLocation location) throws IOException {
