@@ -3,6 +3,8 @@ package com.terraforged.feature.modifier;
 import com.google.gson.JsonElement;
 import com.terraforged.feature.FeatureSerializer;
 import com.terraforged.feature.biome.BiomeFeature;
+import com.terraforged.feature.matcher.dynamic.DynamicList;
+import com.terraforged.feature.matcher.dynamic.DynamicPredicate;
 import com.terraforged.feature.predicate.FeaturePredicate;
 import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
@@ -12,9 +14,14 @@ import net.minecraftforge.eventbus.api.Event;
 
 public class FeatureModifiers extends Event {
 
+    private final DynamicList dynamics = new DynamicList();
     private final ModifierList<FeatureReplacer> replacers = new ModifierList<>();
     private final ModifierList<FeaturePredicate> predicates = new ModifierList<>();
     private final ModifierList<FeatureTransformer> transformers = new ModifierList<>();
+
+    public DynamicList getDynamic() {
+        return dynamics;
+    }
 
     public ModifierList<FeatureReplacer> getReplacers() {
         return replacers;
@@ -32,7 +39,6 @@ public class FeatureModifiers extends Event {
         replacers.sort();
         predicates.sort();
         transformers.sort();
-        ;
     }
 
     public BiomeFeature getFeature(Biome biome, ConfiguredFeature<?, ?> feature) {
@@ -42,7 +48,12 @@ public class FeatureModifiers extends Event {
             // re-serialize if feature has been changed
             element = FeatureSerializer.serialize(result);
         }
-        FeaturePredicate predicate = getPredicate(biome, element);
+
+        FeaturePredicate predicate = getPredicate(feature);
+        if (predicate == null) {
+            predicate = getPredicate(biome, element);
+        }
+
         return new BiomeFeature(predicate, result);
     }
 
@@ -66,6 +77,15 @@ public class FeatureModifiers extends Event {
         }
 
         return FeatureSerializer.deserialize(element).orElse(feature);
+    }
+
+    private FeaturePredicate getPredicate(ConfiguredFeature<?, ?> feature) {
+        for (DynamicPredicate predicate : dynamics) {
+            if (predicate.getMatcher().test(feature)) {
+                return predicate.getPredicate();
+            }
+        }
+        return null;
     }
 
     private FeaturePredicate getPredicate(Biome biome, JsonElement element) {
