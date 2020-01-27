@@ -1,6 +1,7 @@
 package com.terraforged.feature.template;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.terraforged.feature.template.type.FeatureType;
 import com.terraforged.feature.template.type.FeatureTypes;
@@ -14,6 +15,7 @@ public class TemplateConfig {
 
     private final String type;
     private final int extendBase;
+    private final JsonElement decorators;
     private final ResourceLocation name;
     private final List<ResourceLocation> paths;
 
@@ -22,6 +24,7 @@ public class TemplateConfig {
         this.name = builder.name;
         this.paths = builder.paths;
         this.extendBase = builder.base;
+        this.decorators = builder.decorators;
     }
 
     public FeatureType getType() {
@@ -30,6 +33,10 @@ public class TemplateConfig {
 
     public int getBaseDepth() {
         return extendBase;
+    }
+
+    public JsonElement getDecorators() {
+        return decorators;
     }
 
     public ResourceLocation getRegistryName() {
@@ -62,6 +69,10 @@ public class TemplateConfig {
             builder.base(root.get("base").getAsInt());
         }
 
+        if (root.has("decorators")) {
+            builder.decorators(root.get("decorators"));
+        }
+
         for (JsonElement path : root.getAsJsonArray("paths")) {
             builder.path(location.getNamespace(), path.getAsString());
         }
@@ -78,6 +89,7 @@ public class TemplateConfig {
         private int base;
         private String type;
         private ResourceLocation name;
+        private JsonElement decorators = JsonNull.INSTANCE;
         private List<ResourceLocation> paths = new ArrayList<>();
 
         public Builder type(String type) {
@@ -87,6 +99,11 @@ public class TemplateConfig {
 
         public Builder base(int depth) {
             this.base = depth;
+            return this;
+        }
+
+        public Builder decorators(JsonElement element) {
+            this.decorators = element;
             return this;
         }
 

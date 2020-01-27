@@ -3,8 +3,11 @@ package com.terraforged.feature.template;
 import com.terraforged.feature.FeatureManager;
 import com.terraforged.feature.data.DataHelper;
 import com.terraforged.feature.data.DataPack;
+import com.terraforged.feature.template.decorator.DecoratedFeature;
+import com.terraforged.feature.template.decorator.DecoratorFactory;
 import com.terraforged.feature.template.feature.MultiTemplateFeature;
 import com.terraforged.feature.template.feature.TemplateFeature;
+import com.terraforged.feature.template.type.FeatureTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.event.RegistryEvent;
@@ -32,7 +35,15 @@ public class TemplateManager {
                 FeatureManager.LOG.debug(marker, "Registering feature: {}", config.getRegistryName());
                 List<TemplateFeature> templates = loadTemplates(dataPack, config);
                 MultiTemplateFeature feature = new MultiTemplateFeature(config, templates);
-                event.getRegistry().register(feature);
+                DecoratorFactory factory = feature.getType().getFactory();
+                Optional<DecoratedFeature<?, ?>> decorated = factory.apply(feature, config.getDecorators());
+                if (decorated.isPresent()) {
+                    event.getRegistry().register(decorated.get());
+                    FeatureTypes.register(feature.getType(), decorated.get());
+                } else {
+                    event.getRegistry().register(feature);
+                    FeatureTypes.register(feature.getType(), feature);
+                }
             }
         });
     }

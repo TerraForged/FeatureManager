@@ -2,7 +2,6 @@ package com.terraforged.feature.template.feature;
 
 import com.terraforged.feature.template.TemplateConfig;
 import com.terraforged.feature.template.type.FeatureType;
-import com.terraforged.feature.template.type.FeatureTypes;
 import com.terraforged.feature.template.type.TypedFeature;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +29,6 @@ public class MultiTemplateFeature extends Feature<NoFeatureConfig> implements Ty
         this.baseDepth = config.getBaseDepth();
         this.templates = templates;
         this.setRegistryName(name);
-        FeatureTypes.register(type, this);
     }
 
     @Override
