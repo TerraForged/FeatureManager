@@ -43,9 +43,13 @@ import java.util.stream.Stream;
 
 public class WorldDelegate implements IWorld {
 
-    private final IWorld delegate;
+    private IWorld delegate;
 
     public WorldDelegate(IWorld delegate) {
+        this.delegate = delegate;
+    }
+
+    public void setDelegate(IWorld delegate) {
         this.delegate = delegate;
     }
 

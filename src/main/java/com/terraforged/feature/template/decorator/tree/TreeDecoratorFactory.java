@@ -30,7 +30,7 @@ public class TreeDecoratorFactory implements DecoratorFactory {
             return Optional.empty();
         }
 
-        List<Decorator<TreeRecorder>> list = new ArrayList<>();
+        List<Decorator<TreeBuffer>> list = new ArrayList<>();
         for (Map.Entry<String, JsonElement> entry : decorators.getAsJsonObject().entrySet()) {
             if (!entry.getValue().isJsonObject()) {
                 continue;
@@ -49,10 +49,10 @@ public class TreeDecoratorFactory implements DecoratorFactory {
         return Optional.of(new DecoratedFeature<>(feature, list, FACTORY));
     }
 
-    private static final Function<IWorld, TreeRecorder> FACTORY = w -> {
-        if (w instanceof TreeRecorder) {
-            return (TreeRecorder) w;
+    private static final Function<IWorld, TreeBuffer> FACTORY = w -> {
+        if (w instanceof TreeBuffer) {
+            return (TreeBuffer) w;
         }
-        return new TreeRecorder(w);
+        return new TreeBuffer(w);
     };
 }

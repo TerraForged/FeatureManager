@@ -5,7 +5,7 @@ import net.minecraft.world.gen.treedecorator.TreeDecorator;
 
 import java.util.Random;
 
-public class TreeFeatureDecorator implements Decorator<TreeRecorder> {
+public class TreeFeatureDecorator implements Decorator<TreeBuffer> {
 
     private final TreeDecorator decorator;
 
@@ -14,7 +14,7 @@ public class TreeFeatureDecorator implements Decorator<TreeRecorder> {
     }
 
     @Override
-    public void apply(TreeRecorder world, Random random) {
+    public void apply(TreeBuffer world, Random random) {
         decorator.func_225576_a_(
                 world.getDelegate(),
                 random,

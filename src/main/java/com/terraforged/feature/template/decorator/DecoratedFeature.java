@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
-public class DecoratedFeature<T extends Feature<NoFeatureConfig> & TypedFeature, W extends IWorld> extends Feature<NoFeatureConfig> implements TypedFeature {
+public class DecoratedFeature<T extends Feature<NoFeatureConfig> & TypedFeature, W extends DecoratorWorld> extends Feature<NoFeatureConfig> implements TypedFeature {
 
     private final T feature;
     private final List<Decorator<W>> decorators;
@@ -27,6 +27,18 @@ public class DecoratedFeature<T extends Feature<NoFeatureConfig> & TypedFeature,
         setRegistryName(feature.getRegistryName());
     }
 
+    public T getFeature() {
+        return feature;
+    }
+
+    public List<Decorator<W>> getDecorators() {
+        return decorators;
+    }
+
+    public W wrap(IWorld world) {
+        return worldFactory.apply(world);
+    }
+
     @Override
     public FeatureType getType() {
         return feature.getType();
@@ -35,12 +47,20 @@ public class DecoratedFeature<T extends Feature<NoFeatureConfig> & TypedFeature,
     @Override
     public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, NoFeatureConfig config) {
         W featureWorld = worldFactory.apply(world);
-        boolean result = feature.place(featureWorld, generator, rand, pos, config);
-        if (result) {
-            for (Decorator<W> decorator : decorators) {
-                decorator.apply(featureWorld, rand);
-            }
+        if (placeFeature(featureWorld, generator, rand, pos, config)) {
+            decorate(featureWorld, rand);
+            return true;
         }
-        return result;
+        return false;
+    }
+
+    public boolean placeFeature(W world, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, NoFeatureConfig config) {
+        return feature.place(world, generator, rand, pos, config);
+    }
+
+    public void decorate(W world, Random random) {
+        for (Decorator<W> decorator : decorators) {
+            decorator.apply(world, random);
+        }
     }
 }

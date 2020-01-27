@@ -9,8 +9,9 @@ import net.minecraft.world.IWorld;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class BoundsRecorder extends WorldDelegate {
+public abstract class BoundsRecorder extends WorldDelegate {
 
     private BlockPos.Mutable min = null;
     private BlockPos.Mutable max = null;
@@ -26,6 +27,12 @@ public class BoundsRecorder extends WorldDelegate {
         recordMin(pos.getX(), pos.getY(), pos.getZ());
         recordMax(pos.getX(), pos.getY(), pos.getZ());
         return super.setBlockState(pos, newState, flags);
+    }
+
+    public void translate(BlockPos offset) {
+        allPositions = getAllPositions().stream()
+                .map(pos -> pos.add(offset))
+                .collect(Collectors.toSet());
     }
 
     public Set<BlockPos> getAllPositions() {
