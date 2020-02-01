@@ -1,5 +1,6 @@
 package com.terraforged.feature.template.feature;
 
+import com.terraforged.feature.util.BlockReader;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
@@ -25,6 +26,7 @@ import java.util.Random;
 public class TemplateFeature extends Feature<TemplateFeatureConfig> {
 
     private final List<BlockInfo> blocks;
+    private final BlockReader reader = new BlockReader();
 
     private TemplateFeature(List<BlockInfo> blocks) {
         super(TemplateFeatureConfig::deserialize);
@@ -44,7 +46,7 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
             }
 
             BlockPos pos = Template.getTransformedPos(block.pos, mirror, rotation, BlockPos.ZERO).add(origin);
-            if (block.pos.getY() <= 0) {
+            if (block.pos.getY() <= 0 && block.state.isNormalCube(reader.setState(block.state), BlockPos.ZERO)) {
                 placeBase(world, pos, state, config.baseDepth);
             }
 
