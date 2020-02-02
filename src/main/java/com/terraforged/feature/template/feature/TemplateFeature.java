@@ -18,10 +18,7 @@ import net.minecraftforge.common.util.Constants;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public class TemplateFeature extends Feature<TemplateFeatureConfig> {
 
@@ -168,6 +165,10 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
         int closestDist2 = Integer.MAX_VALUE;
 
         for (BlockInfo block : blocks) {
+            if (!block.state.isSolid()) {
+                continue;
+            }
+
             if (origin == null) {
                 origin = block.pos;
                 lowestSolid = block.pos.getY();
@@ -184,6 +185,10 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
                     lowestSolid = block.pos.getY();
                 }
             }
+        }
+
+        if (origin == null) {
+            return Arrays.asList(blocks);
         }
 
         // relativize all blocks to the origin
