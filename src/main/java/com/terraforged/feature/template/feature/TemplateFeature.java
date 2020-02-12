@@ -18,7 +18,11 @@ import net.minecraftforge.common.util.Constants;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 public class TemplateFeature extends Feature<TemplateFeatureConfig> {
 

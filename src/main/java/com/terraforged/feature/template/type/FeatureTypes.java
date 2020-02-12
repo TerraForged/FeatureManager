@@ -6,7 +6,12 @@ import com.terraforged.feature.template.placement.Placement;
 import com.terraforged.feature.template.placement.TreePlacement;
 import net.minecraft.world.gen.feature.Feature;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class FeatureTypes {
 

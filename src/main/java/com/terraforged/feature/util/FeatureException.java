@@ -1,8 +1,6 @@
-package com.terraforged.feature;
+package com.terraforged.feature.util;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredRandomFeatureList;
@@ -12,39 +10,31 @@ import net.minecraft.world.gen.feature.MultipleRandomFeatureConfig;
 import net.minecraft.world.gen.feature.MultipleWithChanceRandomFeatureConfig;
 import net.minecraft.world.gen.feature.SingleRandomFeature;
 import net.minecraft.world.gen.feature.TwoFeatureChoiceConfig;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 
-import java.util.Optional;
+public class FeatureException extends RuntimeException {
 
-public class FeatureSerializer {
-
-    private static final Marker MARKER = MarkerManager.getMarker("Serializer");
-
-    public static JsonElement serialize(ConfiguredFeature<?, ?> feature) {
-        try {
-            return feature.serialize(JsonOps.INSTANCE).getValue();
-        } catch (Throwable t) {
-            FeatureManager.LOG.error(MARKER, "[{}] Failed to serialize feature: {}", t.getLocalizedMessage(), toString(feature));
-            return JsonNull.INSTANCE;
-        }
+    public FeatureException(ConfiguredFeature<?, ?> feature, Throwable t) {
+        super(feature(feature), t);
     }
 
-    public static Optional<ConfiguredFeature<?, ?>> deserialize(JsonElement element) {
-        try {
-            Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, element);
-            ConfiguredFeature<?, ?> feature = ConfiguredFeature.deserialize(dynamic);
-            return Optional.of(feature);
-        } catch (Throwable t) {
-            FeatureManager.LOG.error(MARKER, "[{}] Failed to deserialize feature data: {}}", t.getLocalizedMessage(), element);
-            return Optional.empty();
-        }
+    public FeatureException(JsonElement element, Throwable t) {
+        super(element(element), t);
     }
 
-    public static String toString(ConfiguredFeature<?, ?> feature) {
+    public static String getName(ConfiguredFeature<?, ?> feature) {
         StringBuilder sb = new StringBuilder(256);
         toString(feature, sb);
         return sb.toString();
+    }
+
+    private static String feature(ConfiguredFeature<?, ?> feature) {
+        StringBuilder sb = new StringBuilder(256);
+        toString(feature, sb);
+        return String.format("Failed to serialize Feature: %s", sb.toString());
+    }
+
+    private static String element(JsonElement element) {
+        return String.format("Failed to deserialize Feature data: %s", element);
     }
 
     private static void toString(ConfiguredFeature<?, ?> feature, StringBuilder sb) {
