@@ -4,12 +4,12 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeContainer;
 import net.minecraft.world.chunk.IChunk;
 
-public class SingleSurfaceBiome extends CachedPredicate {
+public class SingleSurfaceBiome implements FeaturePredicate {
 
     public static final FeaturePredicate INSTANCE = new SingleSurfaceBiome();
 
     @Override
-    public boolean doTest(IChunk chunk, Biome biome) {
+    public boolean test(IChunk chunk, Biome biome) {
         BiomeContainer biomes = chunk.getBiomes();
         if (biomes == null) {
             return false;

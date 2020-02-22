@@ -4,7 +4,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.Heightmap;
 
-public class MinDepth extends CachedPredicate {
+public class MinDepth implements FeaturePredicate {
 
     public static final MinDepth DEPTH60 = new MinDepth(60);
     public static final MinDepth DEPTH50 = new MinDepth(50);
@@ -17,7 +17,7 @@ public class MinDepth extends CachedPredicate {
     }
 
     @Override
-    protected boolean doTest(IChunk chunk, Biome biome) {
+    public boolean test(IChunk chunk, Biome biome) {
         return chunk.getTopBlockY(Heightmap.Type.OCEAN_FLOOR, 8, 8) < depth;
     }
 }

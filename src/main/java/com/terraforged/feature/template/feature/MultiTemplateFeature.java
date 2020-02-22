@@ -20,7 +20,6 @@ public class MultiTemplateFeature extends Feature<NoFeatureConfig> implements Ty
     private final FeatureType type;
     private final ResourceLocation name;
     private final List<TemplateFeature> templates;
-    private final TemplateFeatureConfig config = new TemplateFeatureConfig(false, false);
 
     public MultiTemplateFeature(TemplateConfig config, List<TemplateFeature> templates) {
         super(NoFeatureConfig::deserialize);
@@ -41,8 +40,8 @@ public class MultiTemplateFeature extends Feature<NoFeatureConfig> implements Ty
         if (getType().getPlacement().canPlaceAt(world, pos)) {
             if (templates.size() > 0) {
                 Feature<TemplateFeatureConfig> feature = next(rand);
-                this.config.baseDepth = baseDepth;
-                return feature.place(world, generator, rand, pos, this.config);
+                TemplateFeatureConfig cfg = new TemplateFeatureConfig(false, false, baseDepth);
+                return feature.place(world, generator, rand, pos, cfg);
             }
         }
         return false;

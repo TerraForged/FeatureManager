@@ -3,7 +3,7 @@ package com.terraforged.feature.predicate;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
 
-public class MatchBiome extends CachedPredicate {
+public class MatchBiome implements FeaturePredicate {
 
     private final Biome biome;
 
@@ -12,7 +12,7 @@ public class MatchBiome extends CachedPredicate {
     }
 
     @Override
-    protected boolean doTest(IChunk chunk, Biome biome) {
+    public boolean test(IChunk chunk, Biome biome) {
         return biome == this.biome;
     }
 }

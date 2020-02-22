@@ -7,15 +7,16 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 
 public class TemplateFeatureConfig extends NoFeatureConfig {
 
-    public static final TemplateFeatureConfig DEFAULT = new TemplateFeatureConfig(false, false);
+    public static final TemplateFeatureConfig DEFAULT = new TemplateFeatureConfig(false, false, 0);
 
     public final boolean pasteAir;
     public final boolean replaceSolid;
-    public int baseDepth = 0;
+    public final int baseDepth;
 
-    public TemplateFeatureConfig(boolean pasteAir, boolean replaceSolid) {
+    public TemplateFeatureConfig(boolean pasteAir, boolean replaceSolid, int baseDepth) {
         this.pasteAir = pasteAir;
         this.replaceSolid = replaceSolid;
+        this.baseDepth = baseDepth;
     }
 
     @Override
@@ -37,7 +38,8 @@ public class TemplateFeatureConfig extends NoFeatureConfig {
         try {
             boolean pasteAir = dynamic.get("paste_air").asBoolean(false);
             boolean replaceSolid = dynamic.get("replace_solid").asBoolean(false);
-            return new TemplateFeatureConfig(pasteAir, replaceSolid);
+            int baseDepth = dynamic.get("base_depth").asInt(0);
+            return new TemplateFeatureConfig(pasteAir, replaceSolid, baseDepth);
         } catch (Throwable t) {
             t.printStackTrace();
             return DEFAULT;
