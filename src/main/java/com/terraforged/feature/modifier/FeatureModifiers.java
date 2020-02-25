@@ -26,6 +26,7 @@
 package com.terraforged.feature.modifier;
 
 import com.google.gson.JsonElement;
+import com.terraforged.feature.FeatureManager;
 import com.terraforged.feature.FeatureSerializer;
 import com.terraforged.feature.biome.BiomeFeature;
 import com.terraforged.feature.matcher.dynamic.DynamicList;
@@ -67,19 +68,25 @@ public class FeatureModifiers extends Event {
     }
 
     public BiomeFeature getFeature(Biome biome, ConfiguredFeature<?, ?> feature) {
-        JsonElement element = FeatureSerializer.serialize(feature);
-        ConfiguredFeature<?, ?> result = getFeature(biome, feature, element);
-        if (result != feature) {
-            // re-serialize if feature has been changed
-            element = FeatureSerializer.serialize(result);
-        }
+        try {
+            JsonElement element = FeatureSerializer.serialize(feature);
+            ConfiguredFeature<?, ?> result = getFeature(biome, feature, element);
+            if (result != feature) {
+                // re-serialize if feature has been changed
+                element = FeatureSerializer.serialize(result);
+            }
 
-        FeaturePredicate predicate = getPredicate(feature);
-        if (predicate == null) {
-            predicate = getPredicate(biome, element);
-        }
+            FeaturePredicate predicate = getPredicate(feature);
+            if (predicate == null) {
+                predicate = getPredicate(biome, element);
+            }
 
-        return new BiomeFeature(predicate, result);
+            return new BiomeFeature(predicate, result);
+        } catch (Throwable t) {
+            FeatureManager.LOG.warn(FeatureSerializer.MARKER, "Unable to serialize biome feature: {}", biome);
+            t.printStackTrace();
+        }
+        return new BiomeFeature(FeaturePredicate.ALLOW, feature);
     }
 
     private ConfiguredFeature<?, ?> getFeature(Biome biome, ConfiguredFeature<?, ?> feature, JsonElement element) {
@@ -101,7 +108,13 @@ public class FeatureModifiers extends Event {
             return feature;
         }
 
-        return FeatureSerializer.deserialize(element).orElse(feature);
+        try {
+            return FeatureSerializer.deserializeUnchecked(element);
+        } catch (Throwable t) {
+            FeatureManager.LOG.warn(FeatureSerializer.MARKER, "Unable to deserialize biome feature: {}", biome);
+            t.printStackTrace();
+            return feature;
+        }
     }
 
     private FeaturePredicate getPredicate(ConfiguredFeature<?, ?> feature) {
@@ -119,6 +132,6 @@ public class FeatureModifiers extends Event {
                 return modifier.getModifier();
             }
         }
-        return FeaturePredicate.PASS;
+        return FeaturePredicate.ALLOW;
     }
 }

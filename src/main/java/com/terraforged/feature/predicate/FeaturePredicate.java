@@ -32,7 +32,7 @@ import java.util.function.BiPredicate;
 
 public interface FeaturePredicate extends BiPredicate<IChunk, Biome> {
 
-    FeaturePredicate PASS = (c, b) -> true;
+    FeaturePredicate ALLOW = (c, b) -> true;
     FeaturePredicate DENY = (c, b) -> false;
 
     @Override

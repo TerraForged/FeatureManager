@@ -27,7 +27,6 @@ package com.terraforged.feature;
 
 import com.terraforged.feature.biome.BiomeFeature;
 import com.terraforged.feature.biome.BiomeFeatures;
-import com.terraforged.feature.event.FeatureModifierEvent;
 import com.terraforged.feature.modifier.FeatureModifierLoader;
 import com.terraforged.feature.modifier.FeatureModifiers;
 import com.terraforged.feature.template.TemplateManager;
@@ -36,7 +35,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -74,10 +72,6 @@ public class FeatureManager implements FeatureDecorator {
 
     public static FeatureManager create(IWorld world, FeatureModifiers modifiers) {
         LOG.debug(INIT, "Initializing FeatureManager");
-
-        LOG.debug(INIT, " Firing init events");
-        MinecraftForge.EVENT_BUS.post(new FeatureModifierEvent(world, modifiers));
-
         int predicates = modifiers.getPredicates().size();
         int replacers = modifiers.getReplacers().size();
         int transformers = modifiers.getTransformers().size();
