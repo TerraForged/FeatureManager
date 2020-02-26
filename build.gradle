@@ -10,10 +10,11 @@ buildscript {
 }
 
 apply plugin: "net.minecraftforge.gradle"
+apply plugin: "maven-publish"
 apply plugin: "eclipse"
 
 group = "com.terraforged"
-version = "${version}-mc${mc_version}"
+version = "${mc_version}-${version}"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
 
 repositories {
@@ -27,48 +28,9 @@ dependencies {
 
 minecraft {
     mappings channel: mcp_channel, version: mcp_version
-    runs {
-        client {
-            workingDirectory project.file("run/client")
-            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
-            property "forge.logging.console.level", "debug"
-            jvmArgs "-Xmx8G", "-Xms6G"
-            mods {
-                mod {
-                    source sourceSets.test
-                }
-            }
-        }
-        server {
-            workingDirectory project.file("run/server")
-            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
-            property "forge.logging.console.level", "debug"
-            jvmArgs "-Xmx8G", "-Xms6G"
-            mods {
-                mod {
-                    source sourceSets.test
-                }
-            }
-        }
-    }
-}
-
-task prepareRunClasses(type: Copy) {
-    from("$buildDir/classes/java/main")
-    into("$buildDir/classes/java/test")
-}
-
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier = "deobf"
-}
-
-testClasses {
-    dependsOn(prepareRunClasses)
 }
 
 jar {
-    dependsOn(deobfJar)
     manifest {
         attributes([
                 "Specification-Title"     : "FeatureManager",
@@ -79,5 +41,26 @@ jar {
                 "Implementation-Vendor"   : "FeatureManager",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+
+    if (System.getenv("MAVEN_USER") != null && System.getenv("MAVEN_PASS") != null) {
+        repositories {
+            maven {
+                credentials {
+                    username System.getenv("MAVEN_USER")
+                    password System.getenv("MAVEN_PASS")
+                }
+                name = "nexus"
+                url = "https://io.terraforged.com/repository/maven/"
+            }
+        }
     }
 }
