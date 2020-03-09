@@ -34,9 +34,12 @@ import com.terraforged.feature.matcher.dynamic.DynamicPredicate;
 import com.terraforged.feature.predicate.FeaturePredicate;
 import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
+import com.terraforged.feature.util.FeatureDebugger;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraftforge.eventbus.api.Event;
+
+import java.util.List;
 
 public class FeatureModifiers extends Event {
 
@@ -83,8 +86,16 @@ public class FeatureModifiers extends Event {
 
             return new BiomeFeature(predicate, result);
         } catch (Throwable t) {
-            FeatureManager.LOG.warn(FeatureSerializer.MARKER, "Unable to serialize biome feature: {}", biome);
-            t.printStackTrace();
+            String name = biome.getRegistryName() + "";
+            List<String> errors = FeatureDebugger.getErrors(feature);
+            FeatureManager.LOG.debug(FeatureSerializer.MARKER, "Unable to serialize feature in biome: {}", name);
+            if (errors.isEmpty()) {
+                FeatureManager.LOG.debug("Unable to determine issues. See stacktrace:", t);
+            } else {
+                for (String error : errors) {
+                    FeatureManager.LOG.debug(FeatureSerializer.MARKER, " - {}", error);
+                }
+            }
         }
         return new BiomeFeature(FeaturePredicate.ALLOW, feature);
     }
