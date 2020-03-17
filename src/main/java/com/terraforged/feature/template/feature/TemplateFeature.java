@@ -52,7 +52,6 @@ import java.util.Random;
 public class TemplateFeature extends Feature<TemplateFeatureConfig> {
 
     private final List<BlockInfo> blocks;
-    private final BlockReader reader = new BlockReader();
 
     private TemplateFeature(List<BlockInfo> blocks) {
         super(TemplateFeatureConfig::deserialize);
@@ -63,6 +62,7 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
     public boolean place(IWorld world, ChunkGenerator<?> generator, Random rand, BlockPos origin, TemplateFeatureConfig config) {
         Mirror mirror = getMirror(rand);
         Rotation rotation = getRotation(rand);
+        BlockReader reader = new BlockReader();
 
         boolean placed = false;
         for (BlockInfo block : blocks) {
