@@ -32,8 +32,8 @@ import net.minecraft.world.gen.Heightmap;
 public class MinDepth implements FeaturePredicate {
 
     public static final MinDepth DEPTH60 = new MinDepth(60);
-    public static final MinDepth DEPTH50 = new MinDepth(50);
-    public static final MinDepth DEPTH40 = new MinDepth(40);
+    public static final MinDepth DEPTH55 = new MinDepth(55);
+    public static final MinDepth DEPTH45 = new MinDepth(45);
 
     private final int depth;
 
@@ -43,6 +43,6 @@ public class MinDepth implements FeaturePredicate {
 
     @Override
     public boolean test(IChunk chunk, Biome biome) {
-        return chunk.getTopBlockY(Heightmap.Type.OCEAN_FLOOR, 8, 8) < depth;
+        return chunk.getTopBlockY(Heightmap.Type.OCEAN_FLOOR_WG, 8, 8) < depth;
     }
 }
