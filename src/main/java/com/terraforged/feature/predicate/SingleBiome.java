@@ -29,9 +29,9 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeContainer;
 import net.minecraft.world.chunk.IChunk;
 
-public class SingleSurfaceBiome implements FeaturePredicate {
+public class SingleBiome implements FeaturePredicate {
 
-    public static final FeaturePredicate INSTANCE = new SingleSurfaceBiome();
+    public static final FeaturePredicate INSTANCE = new SingleBiome();
 
     @Override
     public boolean test(IChunk chunk, Biome biome) {
@@ -41,7 +41,7 @@ public class SingleSurfaceBiome implements FeaturePredicate {
         }
         for (int dz = 0; dz < 16; dz++) {
             for (int dx = 0; dx < 16; dx++) {
-                if (biomes.getNoiseBiome(dx, 70, dz) != biome) {
+                if (biomes.getNoiseBiome(dx, 0, dz) != biome) {
                     return false;
                 }
             }

@@ -79,7 +79,7 @@ public class FeatureModifiers extends Event {
                 element = FeatureSerializer.serialize(result);
             }
 
-            FeaturePredicate predicate = getPredicate(feature);
+            FeaturePredicate predicate = getPredicate(result);
             if (predicate == null) {
                 predicate = getPredicate(biome, element);
             }
