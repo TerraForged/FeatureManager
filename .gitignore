@@ -26,4 +26,5 @@ hs_err_pid*
 client/
 server/
 run/
+build/
 *.iml
