@@ -33,9 +33,10 @@ import com.terraforged.feature.matcher.biome.BiomeMatcher;
 import com.terraforged.feature.matcher.biome.BiomeMatcherParser;
 import com.terraforged.feature.matcher.feature.FeatureMatcher;
 import com.terraforged.feature.matcher.feature.FeatureMatcherParser;
+import com.terraforged.feature.transformer.FeatureInserter;
+import com.terraforged.feature.transformer.FeatureParser;
 import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
-import com.terraforged.feature.transformer.FeatureTransformerParser;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -76,17 +77,24 @@ public class FeatureModifierLoader {
             return false;
         }
 
-        Optional<FeatureReplacer> replacer = FeatureTransformerParser.parseReplacer(root);
+        Optional<FeatureReplacer> replacer = FeatureParser.parseReplacer(root);
         if (replacer.isPresent()) {
             BiomeFeatureMatcher biomeFeatureMatcher = new BiomeFeatureMatcher(biome.get(), matcher.get());
             modifiers.getReplacers().add(biomeFeatureMatcher, replacer.get());
             return true;
         }
 
-        Optional<FeatureTransformer> transformer = FeatureTransformerParser.parseTransformer(root);
+        Optional<FeatureTransformer> transformer = FeatureParser.parseTransformer(root);
         if (transformer.isPresent()) {
             BiomeFeatureMatcher biomeFeatureMatcher = new BiomeFeatureMatcher(biome.get(), matcher.get());
             modifiers.getTransformers().add(biomeFeatureMatcher, transformer.get());
+            return true;
+        }
+
+        Optional<FeatureInserter> inserter = FeatureParser.parseInserter(root);
+        if (inserter.isPresent()) {
+            BiomeFeatureMatcher biomeFeatureMatcher = new BiomeFeatureMatcher(biome.get(), matcher.get());
+            modifiers.getInserters().add(biomeFeatureMatcher, inserter.get());
             return true;
         }
 

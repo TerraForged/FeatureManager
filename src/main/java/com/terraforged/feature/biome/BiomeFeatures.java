@@ -28,6 +28,7 @@ package com.terraforged.feature.biome;
 import net.minecraft.world.gen.GenerationStage;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -56,6 +57,13 @@ public class BiomeFeatures {
     public static class Builder {
 
         private Map<GenerationStage.Decoration, List<BiomeFeature>> features = Collections.emptyMap();
+
+        public Builder add(GenerationStage.Decoration stage, Collection<BiomeFeature> features) {
+            for (BiomeFeature feature : features) {
+                add(stage, feature);
+            }
+            return this;
+        }
 
         public Builder add(GenerationStage.Decoration stage, BiomeFeature feature) {
             if (features.isEmpty()) {

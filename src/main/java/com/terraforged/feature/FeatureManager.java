@@ -25,10 +25,10 @@
 
 package com.terraforged.feature;
 
-import com.terraforged.feature.biome.BiomeFeature;
 import com.terraforged.feature.biome.BiomeFeatures;
 import com.terraforged.feature.modifier.FeatureModifierLoader;
 import com.terraforged.feature.modifier.FeatureModifiers;
+import com.terraforged.feature.modifier.ModifierSet;
 import com.terraforged.feature.template.TemplateManager;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
@@ -74,8 +74,9 @@ public class FeatureManager implements FeatureDecorator {
         LOG.debug(INIT, "Initializing FeatureManager");
         int predicates = modifiers.getPredicates().size();
         int replacers = modifiers.getReplacers().size();
+        int inserters = modifiers.getInserters().size();
         int transformers = modifiers.getTransformers().size();
-        LOG.debug(INIT, " Predicates: {}, Replacers: {}, Transformers: {}", predicates, replacers, transformers);
+        LOG.debug(INIT, " Predicates: {}, Replacers: {}, Inserters: {}, Transformers: {}", predicates, replacers, inserters, transformers);
 
         modifiers.sort();
 
@@ -98,8 +99,10 @@ public class FeatureManager implements FeatureDecorator {
         BiomeFeatures.Builder builder = BiomeFeatures.builder();
         for (GenerationStage.Decoration stage : GenerationStage.Decoration.values()) {
             for (ConfiguredFeature<?, ?> feature : biome.getFeatures(stage)) {
-                BiomeFeature biomeFeature = modifiers.getFeature(biome, feature);
-                builder.add(stage, biomeFeature);
+                ModifierSet modifierSet = modifiers.getFeature(biome, feature);
+                builder.add(stage, modifierSet.before);
+                builder.add(stage, modifierSet.feature);
+                builder.add(stage, modifierSet.after);
             }
         }
         return builder.build();

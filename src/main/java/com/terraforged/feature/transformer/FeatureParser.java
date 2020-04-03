@@ -33,11 +33,23 @@ import com.terraforged.feature.FeatureSerializer;
 import java.util.Map;
 import java.util.Optional;
 
-public class FeatureTransformerParser {
+public class FeatureParser {
 
     public static Optional<FeatureReplacer> parseReplacer(JsonObject root) {
         if (root.has("replace")) {
             return FeatureSerializer.deserialize(root.get("replace")).map(FeatureReplacer::of);
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<FeatureInserter> parseInserter(JsonObject root) {
+        if (root.has("before")) {
+            return FeatureSerializer.deserialize(root.get("before"))
+                    .map(feature -> new FeatureInserter(feature, FeatureInserter.Type.BEFORE));
+        }
+        if (root.has("after")) {
+            return FeatureSerializer.deserialize(root.get("after"))
+                    .map(feature -> new FeatureInserter(feature, FeatureInserter.Type.AFTER));
         }
         return Optional.empty();
     }
