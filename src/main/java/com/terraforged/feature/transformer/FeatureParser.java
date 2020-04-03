@@ -42,14 +42,14 @@ public class FeatureParser {
         return Optional.empty();
     }
 
-    public static Optional<FeatureInserter> parseInserter(JsonObject root) {
+    public static Optional<FeatureInjector> parseInjector(JsonObject root) {
         if (root.has("before")) {
             return FeatureSerializer.deserialize(root.get("before"))
-                    .map(feature -> new FeatureInserter(feature, FeatureInserter.Type.BEFORE));
+                    .map(feature -> new FeatureInjector(feature, FeatureInjector.Type.BEFORE));
         }
         if (root.has("after")) {
             return FeatureSerializer.deserialize(root.get("after"))
-                    .map(feature -> new FeatureInserter(feature, FeatureInserter.Type.AFTER));
+                    .map(feature -> new FeatureInjector(feature, FeatureInjector.Type.AFTER));
         }
         return Optional.empty();
     }

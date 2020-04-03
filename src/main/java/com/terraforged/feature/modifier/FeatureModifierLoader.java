@@ -33,7 +33,7 @@ import com.terraforged.feature.matcher.biome.BiomeMatcher;
 import com.terraforged.feature.matcher.biome.BiomeMatcherParser;
 import com.terraforged.feature.matcher.feature.FeatureMatcher;
 import com.terraforged.feature.matcher.feature.FeatureMatcherParser;
-import com.terraforged.feature.transformer.FeatureInserter;
+import com.terraforged.feature.transformer.FeatureInjector;
 import com.terraforged.feature.transformer.FeatureParser;
 import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
@@ -91,10 +91,10 @@ public class FeatureModifierLoader {
             return true;
         }
 
-        Optional<FeatureInserter> inserter = FeatureParser.parseInserter(root);
-        if (inserter.isPresent()) {
+        Optional<FeatureInjector> injector = FeatureParser.parseInjector(root);
+        if (injector.isPresent()) {
             BiomeFeatureMatcher biomeFeatureMatcher = new BiomeFeatureMatcher(biome.get(), matcher.get());
-            modifiers.getInserters().add(biomeFeatureMatcher, inserter.get());
+            modifiers.getInjectors().add(biomeFeatureMatcher, injector.get());
             return true;
         }
 

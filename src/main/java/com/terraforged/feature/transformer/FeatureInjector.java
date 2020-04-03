@@ -2,12 +2,12 @@ package com.terraforged.feature.transformer;
 
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
-public class FeatureInserter {
+public class FeatureInjector {
 
     private final Type type;
     private final ConfiguredFeature<?, ?> feature;
 
-    public FeatureInserter(ConfiguredFeature<?, ?> feature, Type type) {
+    public FeatureInjector(ConfiguredFeature<?, ?> feature, Type type) {
         this.feature = feature;
         this.type = type;
     }

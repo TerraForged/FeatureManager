@@ -74,9 +74,9 @@ public class FeatureManager implements FeatureDecorator {
         LOG.debug(INIT, "Initializing FeatureManager");
         int predicates = modifiers.getPredicates().size();
         int replacers = modifiers.getReplacers().size();
-        int inserters = modifiers.getInserters().size();
+        int injectors = modifiers.getInjectors().size();
         int transformers = modifiers.getTransformers().size();
-        LOG.debug(INIT, " Predicates: {}, Replacers: {}, Inserters: {}, Transformers: {}", predicates, replacers, inserters, transformers);
+        LOG.debug(INIT, " Predicates: {}, Replacers: {}, Injectors: {}, Transformers: {}", predicates, replacers, injectors, transformers);
 
         modifiers.sort();
 

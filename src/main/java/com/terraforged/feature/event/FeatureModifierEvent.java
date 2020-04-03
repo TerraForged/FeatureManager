@@ -28,6 +28,7 @@ package com.terraforged.feature.event;
 import com.terraforged.feature.modifier.FeatureModifiers;
 import com.terraforged.feature.modifier.ModifierList;
 import com.terraforged.feature.predicate.FeaturePredicate;
+import com.terraforged.feature.transformer.FeatureInjector;
 import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
 import net.minecraft.world.IWorld;
@@ -54,6 +55,10 @@ public class FeatureModifierEvent extends Event {
 
     public ModifierList<FeatureReplacer> getReplacers() {
         return modifiers.getReplacers();
+    }
+
+    public ModifierList<FeatureInjector> getInjectors() {
+        return modifiers.getInjectors();
     }
 
     public ModifierList<FeaturePredicate> getPredicates() {

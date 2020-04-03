@@ -32,7 +32,7 @@ import com.terraforged.feature.biome.BiomeFeature;
 import com.terraforged.feature.matcher.dynamic.DynamicList;
 import com.terraforged.feature.matcher.dynamic.DynamicPredicate;
 import com.terraforged.feature.predicate.FeaturePredicate;
-import com.terraforged.feature.transformer.FeatureInserter;
+import com.terraforged.feature.transformer.FeatureInjector;
 import com.terraforged.feature.transformer.FeatureReplacer;
 import com.terraforged.feature.transformer.FeatureTransformer;
 import com.terraforged.feature.util.FeatureDebugger;
@@ -48,7 +48,7 @@ public class FeatureModifiers extends Event {
 
     private final DynamicList dynamics = new DynamicList();
     private final ModifierList<FeatureReplacer> replacers = new ModifierList<>();
-    private final ModifierList<FeatureInserter> inserters = new ModifierList<>();
+    private final ModifierList<FeatureInjector> injectors = new ModifierList<>();
     private final ModifierList<FeaturePredicate> predicates = new ModifierList<>();
     private final ModifierList<FeatureTransformer> transformers = new ModifierList<>();
 
@@ -60,8 +60,8 @@ public class FeatureModifiers extends Event {
         return replacers;
     }
 
-    public ModifierList<FeatureInserter> getInserters() {
-        return inserters;
+    public ModifierList<FeatureInjector> getInjectors() {
+        return injectors;
     }
 
     public ModifierList<FeaturePredicate> getPredicates() {
@@ -81,9 +81,6 @@ public class FeatureModifiers extends Event {
     public ModifierSet getFeature(Biome biome, ConfiguredFeature<?, ?> feature) {
         try {
             JsonElement element = FeatureSerializer.serialize(feature);
-            List<BiomeFeature> before = getInserts(biome, feature, element, FeatureInserter.Type.BEFORE);
-            List<BiomeFeature> after = getInserts(biome, feature, element, FeatureInserter.Type.AFTER);
-
             ConfiguredFeature<?, ?> result = getFeature(biome, feature, element);
             if (result != feature) {
                 // re-serialize if feature has been changed
@@ -94,6 +91,9 @@ public class FeatureModifiers extends Event {
             if (predicate == null) {
                 predicate = getPredicate(biome, element);
             }
+
+            List<BiomeFeature> before = getInjectors(biome, predicate, element, FeatureInjector.Type.BEFORE);
+            List<BiomeFeature> after = getInjectors(biome, predicate, element, FeatureInjector.Type.AFTER);
 
             return new ModifierSet(new BiomeFeature(predicate, result), before, after);
         } catch (Throwable t) {
@@ -139,17 +139,13 @@ public class FeatureModifiers extends Event {
         }
     }
 
-    private List<BiomeFeature> getInserts(Biome biome, ConfiguredFeature<?, ?> feature, JsonElement element, FeatureInserter.Type type) {
+    private List<BiomeFeature> getInjectors(Biome biome, FeaturePredicate predicate, JsonElement element, FeatureInjector.Type type) {
         List<BiomeFeature> result = Collections.emptyList();
-        for (Modifier<FeatureInserter> modifier : getInserters()) {
+        for (Modifier<FeatureInjector> modifier : getInjectors()) {
             if (modifier.getModifier().getType() != type) {
                 continue;
             }
             if (modifier.getMatcher().test(biome, element)) {
-                FeaturePredicate predicate = getPredicate(feature);
-                if (predicate == null) {
-                    predicate = getPredicate(biome, element);
-                }
                 if (result.isEmpty()) {
                     result = new ArrayList<>();
                 }
