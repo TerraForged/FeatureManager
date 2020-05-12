@@ -20,11 +20,23 @@ public class FeatureDebugger {
 
     public static List<String> getErrors(ConfiguredFeature<?, ?> feature) {
         List<String> errors = new ArrayList<>();
-        checkConfiguredFeature(feature, errors);
+        try {
+            checkConfiguredFeature(feature, errors);
+        } catch (Throwable t) {
+            errors.add(
+                    "Exception thrown whilst debugging biome feature: " + feature + " (this is bad)"
+                    + "\nError message:"
+                    + "\n" + t.getMessage()
+            );
+        }
         return errors;
     }
 
     private static void checkConfiguredFeature(ConfiguredFeature<?, ?> feature, List<String> errors) {
+        if (!isValid(feature, errors)) {
+            return;
+        }
+
         if (feature.config instanceof DecoratedFeatureConfig) {
             decorated((DecoratedFeatureConfig) feature.config, errors);
             return;
@@ -50,14 +62,11 @@ public class FeatureDebugger {
             multiChance((MultipleWithChanceRandomFeatureConfig) feature.config, errors);
             return;
         }
-
-        checkFeature(feature.feature, errors);
-        checkConfig(feature.config, errors);
     }
 
     private static void decorated(DecoratedFeatureConfig config, List<String> errors) {
         checkConfiguredFeature(config.feature, errors);
-        checkDecorator(config.decorator, errors);
+        isValid(config.decorator, errors);
     }
 
     private static void single(SingleRandomFeature config, List<String> errors) {
@@ -83,47 +92,67 @@ public class FeatureDebugger {
         }
     }
 
-    private static void checkFeature(Feature<?> feature, List<String> list) {
+    private static boolean isValid(ConfiguredFeature<?, ?> feature, List<String> list) {
         if (feature == null) {
-            list.add("null feature");
-        } else if (!ForgeRegistries.FEATURES.containsValue(feature)) {
-            list.add("unregistered feature: " + feature.getClass().getName());
+            list.add("null configured feature (this is bad! D: )");
+            return false;
         }
+        return isValid(feature.feature, list) && isValid(feature.config, list);
     }
 
-    private static void checkConfig(IFeatureConfig config, List<String> list) {
+    private static boolean isValid(Feature<?> feature, List<String> list) {
+        if (feature == null) {
+            list.add("null feature");
+            return false;
+        } else if (!ForgeRegistries.FEATURES.containsValue(feature)) {
+            list.add("unregistered feature: " + feature.getClass().getName());
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isValid(IFeatureConfig config, List<String> list) {
         if (config == null) {
             list.add("null config");
-            return;
+            return false;
         }
 
         try {
             config.serialize(JsonOps.INSTANCE);
+            return true;
         } catch (Throwable t) {
             list.add("config: " + config.getClass().getName() + ", error: " + t.getMessage());
+            return false;
         }
     }
 
-    private static void checkDecorator(ConfiguredPlacement<?> decorator, List<String> list) {
+    private static boolean isValid(ConfiguredPlacement<?> decorator, List<String> list) {
         if (decorator == null) {
             list.add("null configured placement");
-            return;
+            return false;
         }
 
+        boolean valid = true;
         if (decorator.decorator == null) {
             list.add("null placement");
+            valid = false;
         } else if (!ForgeRegistries.DECORATORS.containsValue(decorator.decorator)) {
             list.add("unregistered placement: " + decorator.decorator.getClass().getName());
+            valid = false;
         }
 
         if (decorator.config == null) {
             list.add("null decorator config");
+            valid = false;
         } else {
             try {
                 decorator.config.serialize(JsonOps.INSTANCE);
             } catch (Throwable t) {
+                valid = false;
                 list.add("placement config: " + decorator.config.getClass().getName() + ", error: " + t.getMessage());
             }
         }
+
+        return valid;
     }
 }
