@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class TemplateLoader {
 
@@ -27,11 +28,14 @@ public class TemplateLoader {
             manager.forEach(location.getPath(), DataManager.NBT, (name, data) -> {
                 Template template = cache.get(name);
                 if (template == null) {
-                    FeatureManager.LOG.debug(" Loading template {}", name);
-                    Template.load(data).ifPresent(t -> {
-                        cache.put(name, t);
-                        list.add(t);
-                    });
+                    Optional<Template> instance = Template.load(data);
+                    if (instance.isPresent()) {
+                        FeatureManager.LOG.debug("Loading template {}", name);
+                        cache.put(name, instance.get());
+                        list.add(instance.get());
+                    } else {
+                        FeatureManager.LOG.debug("Failed to load template {}", name);
+                    }
                 } else {
                     list.add(template);
                 }

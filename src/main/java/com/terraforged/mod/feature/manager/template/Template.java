@@ -144,6 +144,7 @@ public class Template {
             List<Template.BlockInfo> blocks = relativize(blockInfos);
             return Optional.of(new Template(blocks));
         } catch (IOException e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

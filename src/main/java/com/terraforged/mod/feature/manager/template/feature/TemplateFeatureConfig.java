@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-import com.terraforged.mod.feature.manager.template.type.FeatureType;
-import com.terraforged.mod.feature.manager.template.type.FeatureTypes;
 import com.terraforged.mod.feature.manager.template.PasteConfig;
 import com.terraforged.mod.feature.manager.template.Template;
 import com.terraforged.mod.feature.manager.template.TemplateLoader;
 import com.terraforged.mod.feature.manager.template.TemplateManager;
 import com.terraforged.mod.feature.manager.template.decorator.DecoratorConfig;
+import com.terraforged.mod.feature.manager.template.type.FeatureType;
+import com.terraforged.mod.feature.manager.template.type.FeatureTypes;
 import com.terraforged.mod.feature.manager.util.Json;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.gen.feature.IFeatureConfig;
@@ -42,6 +42,7 @@ public class TemplateFeatureConfig implements IFeatureConfig {
         this.paste = paste;
         this.templates = templates;
         this.decorator = decorator;
+        System.out.println("### " + templates.size());
         type.register(name);
     }
 

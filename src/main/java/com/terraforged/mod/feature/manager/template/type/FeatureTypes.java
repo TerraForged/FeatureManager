@@ -28,8 +28,8 @@ package com.terraforged.mod.feature.manager.template.type;
 import com.terraforged.mod.feature.manager.template.decorator.Decorator;
 import com.terraforged.mod.feature.manager.template.decorator.NoDecoratorFactory;
 import com.terraforged.mod.feature.manager.template.feature.Placement;
-import com.terraforged.mod.feature.manager.template.type.tree.TreePlacement;
 import com.terraforged.mod.feature.manager.template.type.tree.TreeDecoratorFactory;
+import com.terraforged.mod.feature.manager.template.type.tree.TreePlacement;
 
 import java.util.HashMap;
 import java.util.Map;

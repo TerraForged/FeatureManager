@@ -35,7 +35,7 @@ public class TemplateManager {
             if (data.isJsonObject()) {
                 TemplateFeatureConfig instance = TemplateFeatureConfig.parse(loader, data.getAsJsonObject());
                 templates.put(instance.name, instance);
-                FeatureManager.LOG.debug(marker, " Loaded template config: {}", location);
+                FeatureManager.LOG.debug(marker, " Loaded template config: {}, size:{}", location, instance.templates.size());
             } else {
                 FeatureManager.LOG.error(marker, " Failed to load template config: {}", location);
             }

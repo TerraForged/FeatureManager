@@ -1,5 +1,6 @@
 package com.terraforged.mod.feature.manager.template.feature;
 
+import com.terraforged.mod.feature.manager.FeatureManager;
 import com.terraforged.mod.feature.manager.template.Template;
 import com.terraforged.mod.feature.manager.template.decorator.Decorator;
 import com.terraforged.mod.feature.manager.template.decorator.DecoratorConfig;
@@ -37,6 +38,10 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
     }
 
     public static  <T extends IWorld> boolean paste(IWorld world, Random rand, BlockPos pos, Mirror mirror, Rotation rotation, TemplateFeatureConfig config, DecoratorConfig<T> decorator) {
+        if (config.templates.isEmpty()) {
+            FeatureManager.LOG.warn("Empty template list for config: {}", config.name);
+            return false;
+        }
         Template template = nextTemplate(config.templates, rand);
         T buffer = decorator.createBuffer(world);
         if (template.paste(buffer, pos, mirror, rotation, config.paste)) {
@@ -50,6 +55,10 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
     }
 
     public static  <T extends IWorld> boolean pasteChecked(IWorld world, Random rand, BlockPos pos, Mirror mirror, Rotation rotation, TemplateFeatureConfig config, DecoratorConfig<T> decorator) {
+        if (config.templates.isEmpty()) {
+            FeatureManager.LOG.warn("Empty template list for config: {}", config.name);
+            return false;
+        }
         Template template = nextTemplate(config.templates, rand);
         T buffer = decorator.createBuffer(world);
         if (template.pasteWithBoundsCheck(buffer, pos, mirror, rotation, config.paste)) {
