@@ -2,6 +2,7 @@ package com.terraforged.fm.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.terraforged.fm.FeatureManager;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.resources.ResourcePackInfo;
@@ -9,7 +10,6 @@ import net.minecraft.resources.ResourcePackList;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.util.ResourceLocation;
-import org.jline.utils.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -43,9 +43,9 @@ public class DataManager implements AutoCloseable {
     }
 
     public void forEach(String path, Predicate<String> matcher, ResourceVisitor<InputStream> consumer) {
-        Log.debug("Input path: {}", path);
+        FeatureManager.LOG.debug("Input path: {}", path);
         for (ResourceLocation location : resourceManager.getAllResourceLocations(path, matcher)) {
-            Log.debug(" Location: {}", location);
+            FeatureManager.LOG.debug(" Location: {}", location);
             try (IResource resource = getResource(location)) {
                 if (resource == null) {
                     continue;
@@ -77,7 +77,7 @@ public class DataManager implements AutoCloseable {
         packList.addPackFinder(new FolderDataPackFinder(dir));
 
         packList.reloadPacksFromFinders();
-        packList.getEnabledPacks().stream().map(ResourcePackInfo::getResourcePack).forEach(manager::addResourcePack);
+        packList.getAllPacks().stream().map(ResourcePackInfo::getResourcePack).forEach(manager::addResourcePack);
 
         return new DataManager(manager, packList);
     }
