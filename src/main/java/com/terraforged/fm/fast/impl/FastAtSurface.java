@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class FastAtSurface extends FastFrequencyDecorator {
     @Override
-    protected boolean next(IWorld world, ChunkGenerator<? extends GenerationSettings> generator, Random random, FrequencyConfig config, BlockPos pos, BlockPos.Mutable mutable) {
+    protected boolean next(IWorld world, ChunkGenerator<? extends GenerationSettings> generator, Random random, FrequencyConfig config, BlockPos pos, BlockPos.Mutable mutable, int i) {
         int x = random.nextInt(16) + pos.getX();
         int z = random.nextInt(16) + pos.getZ();
         int y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, x, z);

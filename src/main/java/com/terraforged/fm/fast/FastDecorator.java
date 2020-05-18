@@ -36,7 +36,7 @@ public abstract class FastDecorator<C extends IPlacementConfig> extends Placemen
         int count = getCount(config);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < count; i++) {
-            if (next(world, generator, random, config, pos, mutable)) {
+            if (next(world, generator, random, config, pos, mutable, i)) {
                 result |= feature.place(world, generator, random, mutable);
             }
         }
@@ -45,5 +45,5 @@ public abstract class FastDecorator<C extends IPlacementConfig> extends Placemen
 
     protected abstract int getCount(C config);
 
-    protected abstract boolean next(IWorld world, ChunkGenerator<?> generator, Random random, C config, BlockPos pos, BlockPos.Mutable mutable);
+    protected abstract boolean next(IWorld world, ChunkGenerator<?> generator, Random random, C config, BlockPos pos, BlockPos.Mutable mutable, int count);
 }
