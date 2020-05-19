@@ -213,12 +213,6 @@ public class Template {
         return list;
     }
 
-    private static int dist2(int x1, int z1, int x2, int z2) {
-        int dx = x1 - x2;
-        int dz = z1 - z2;
-        return dx * dx + dz * dz;
-    }
-
     private static BlockPos readPos(ListNBT list) {
         int x = list.getInt(0);
         int y = list.getInt(1);
