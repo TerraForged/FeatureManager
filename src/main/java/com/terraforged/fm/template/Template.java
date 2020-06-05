@@ -13,7 +13,6 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.common.util.Constants;
 
 import java.io.IOException;
@@ -34,13 +33,11 @@ public class Template {
     public boolean paste(IWorld world, BlockPos origin, Mirror mirror, Rotation rotation, PasteConfig config) {
         if (config.checkBounds) {
             IChunk chunk = world.getChunk(origin);
-            if (chunk == null || chunk.getStructureReferences(Feature.VILLAGE.getStructureName()).isEmpty()) {
-                return pasteNormal(world, origin, mirror, rotation, config);
+            if (StructureUtils.hasOvergroundStructure(chunk)) {
+                return pasteWithBoundsCheck(world, origin, mirror, rotation, config);
             }
-            return pasteWithBoundsCheck(world, origin, mirror, rotation, config);
-        } else {
-            return pasteNormal(world, origin, mirror, rotation, config);
         }
+        return pasteNormal(world, origin, mirror, rotation, config);
     }
 
     public boolean pasteNormal(IWorld world, BlockPos origin, Mirror mirror, Rotation rotation, PasteConfig config) {
@@ -61,8 +58,8 @@ public class Template {
                 placeBase(world, pos, block.state, config.baseDepth);
             }
 
+            world.setBlockState(pos, state, 2);
             placed = true;
-            world.setBlockState(pos, block.state, 2);
         }
         return placed;
     }
@@ -185,7 +182,7 @@ public class Template {
             if (origin == null) {
                 origin = block.pos;
                 lowestSolid = block.pos.getY();
-            }else if (block.pos.getY() < lowestSolid) {
+            } else if (block.pos.getY() < lowestSolid) {
                 origin = block.pos;
                 lowestSolid = block.pos.getY();
             } else if (block.pos.getY() == lowestSolid) {
