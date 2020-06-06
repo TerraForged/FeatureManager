@@ -29,6 +29,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.terraforged.fm.matcher.feature.FeatureMatcher;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,14 +102,10 @@ public class FeatureTransformer implements Function<JsonElement, JsonElement> {
     }
 
     public static <T> FeatureTransformer replace(T find, T replace) {
-        if (find instanceof String) {
-            return builder().value((String) find, (String) replace).build();
-        }
-        if (find instanceof Number) {
-            return builder().value((Number) find, (Number) replace).build();
-        }
-        if (find instanceof Boolean) {
-            return builder().value((Boolean) find, (Boolean) replace).build();
+        JsonElement f = FeatureMatcher.arg(find);
+        JsonElement r = FeatureMatcher.arg(replace);
+        if (f.isJsonPrimitive() && r.isJsonPrimitive()) {
+            return builder().value(f.getAsJsonPrimitive(), r.getAsJsonPrimitive()).build();
         }
         return NONE;
     }

@@ -134,7 +134,7 @@ public class FeatureMatcher implements Predicate<JsonElement> {
         return new Builder();
     }
 
-    private static JsonElement arg(Object arg) {
+    public static JsonElement arg(Object arg) {
         if (arg instanceof String) {
             return new JsonPrimitive((String) arg);
         }
