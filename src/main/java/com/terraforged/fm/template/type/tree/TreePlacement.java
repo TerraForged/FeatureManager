@@ -33,7 +33,7 @@ import net.minecraft.world.gen.feature.BaseTreeFeatureConfig;
 
 public abstract class TreePlacement extends AbstractTreeFeature<BaseTreeFeatureConfig> {
 
-    public static final Placement PLACEMENT = (world, pos) -> isDirtOrGrassBlock(world, pos.down()) && clearOverhead(world, pos);
+    public static final Placement PLACEMENT = (world, pos) -> isSoil(world, pos.down(), null) && clearOverhead(world, pos);
 
     private TreePlacement() {
         super(BaseTreeFeatureConfig::deserialize);
@@ -43,7 +43,8 @@ public abstract class TreePlacement extends AbstractTreeFeature<BaseTreeFeatureC
         try (BlockPos.PooledMutable mutable = BlockPos.PooledMutable.retain()) {
             int max = Math.min(world.getMaxHeight(), pos.getY() + 20);
             for (int y = pos.getY(); y < max; y++) {
-                if (!isAirOrLeaves(world, mutable.setPos(pos.getX(), y, pos.getZ()))) {
+                mutable.setPos(pos.getX(), y, pos.getZ());
+                if (world.getBlockState(mutable).isSolid() && !isAirOrLeaves(world, mutable)) {
                     return false;
                 }
             }
