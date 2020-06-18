@@ -50,7 +50,7 @@ public class Template {
             }
 
             BlockPos pos = transform(block.pos, mirror, rotation).add(origin);
-            if (!config.replaceSolid && world.getBlockState(pos).isSolid()) {
+            if (!config.replaceSolid && BlockUtils.isSolid(world, pos)) {
                 continue;
             }
 

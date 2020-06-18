@@ -25,6 +25,7 @@
 
 package com.terraforged.fm.template.type.tree;
 
+import com.terraforged.fm.template.BlockUtils;
 import com.terraforged.fm.template.feature.Placement;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -44,7 +45,7 @@ public abstract class TreePlacement extends AbstractTreeFeature<BaseTreeFeatureC
             int max = Math.min(world.getMaxHeight(), pos.getY() + 20);
             for (int y = pos.getY(); y < max; y++) {
                 mutable.setPos(pos.getX(), y, pos.getZ());
-                if (world.getBlockState(mutable).isSolid() && !isAirOrLeaves(world, mutable)) {
+                if (BlockUtils.isSolid(world, mutable) && !isAirOrLeaves(world, mutable)) {
                     return false;
                 }
             }

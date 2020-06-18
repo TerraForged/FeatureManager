@@ -38,7 +38,7 @@ public class TemplateBuffer {
     }
 
     public void record(BlockPos pos, BlockState state, PasteConfig config) {
-        if (!config.replaceSolid && world.getBlockState(pos).isSolid()) {
+        if (!config.replaceSolid && BlockUtils.isSolid(world, pos)) {
             mask.add(pos);
             return;
         }
