@@ -35,8 +35,12 @@ public class FastSurfaceLayer extends FastDecorator<NoPlacementConfig> {
                 x = pos.getX();
             }
         }
-        int y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, x, z);
+        int y = world.getHeight(getHeightmapType(), x, z) + 1;
         mutable.setPos(x, y, z);
         return true;
+    }
+
+    protected Heightmap.Type getHeightmapType() {
+        return Heightmap.Type.MOTION_BLOCKING;
     }
 }
