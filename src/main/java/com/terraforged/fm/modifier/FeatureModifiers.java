@@ -26,17 +26,20 @@
 package com.terraforged.fm.modifier;
 
 import com.google.gson.JsonElement;
-import com.terraforged.fm.predicate.FeaturePredicate;
-import com.terraforged.fm.transformer.FeatureInjector;
-import com.terraforged.fm.transformer.FeatureReplacer;
-import com.terraforged.fm.transformer.FeatureTransformer;
 import com.terraforged.fm.FeatureManager;
 import com.terraforged.fm.FeatureSerializer;
 import com.terraforged.fm.biome.BiomeFeature;
 import com.terraforged.fm.matcher.dynamic.DynamicList;
 import com.terraforged.fm.matcher.dynamic.DynamicPredicate;
+import com.terraforged.fm.predicate.BiomePredicate;
+import com.terraforged.fm.predicate.FeaturePredicate;
+import com.terraforged.fm.transformer.FeatureAppender;
+import com.terraforged.fm.transformer.FeatureInjector;
+import com.terraforged.fm.transformer.FeatureReplacer;
+import com.terraforged.fm.transformer.FeatureTransformer;
 import com.terraforged.fm.util.FeatureDebugger;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -49,6 +52,7 @@ public class FeatureModifiers extends Event {
     private final DynamicList dynamics = new DynamicList();
     private final ModifierList<FeatureReplacer> replacers = new ModifierList<>();
     private final ModifierList<FeatureInjector> injectors = new ModifierList<>();
+    private final ModifierList<FeatureAppender> appenders = new ModifierList<>();
     private final ModifierList<FeaturePredicate> predicates = new ModifierList<>();
     private final ModifierList<FeatureTransformer> transformers = new ModifierList<>();
 
@@ -62,6 +66,10 @@ public class FeatureModifiers extends Event {
 
     public ModifierList<FeatureInjector> getInjectors() {
         return injectors;
+    }
+
+    public ModifierList<FeatureAppender> getAppenders() {
+        return appenders;
     }
 
     public ModifierList<FeaturePredicate> getPredicates() {
@@ -78,7 +86,15 @@ public class FeatureModifiers extends Event {
         transformers.sort();
     }
 
-    public ModifierSet getFeature(Biome biome, ConfiguredFeature<?, ?> feature) {
+    public List<BiomeFeature> getPrependers(GenerationStage.Decoration stage, Biome biome) {
+        return getAppenders(stage, FeatureInjector.Type.BEFORE, biome);
+    }
+
+    public List<BiomeFeature> getAppenders(GenerationStage.Decoration stage, Biome biome) {
+        return getAppenders(stage, FeatureInjector.Type.AFTER, biome);
+    }
+
+    public ModifierSet getFeature(GenerationStage.Decoration stage, Biome biome, ConfiguredFeature<?, ?> feature) {
         try {
             JsonElement element = FeatureSerializer.serialize(feature);
             ConfiguredFeature<?, ?> result = getFeature(biome, feature, element);
@@ -150,6 +166,25 @@ public class FeatureModifiers extends Event {
                     result = new ArrayList<>();
                 }
                 result.add(new BiomeFeature(predicate, modifier.getModifier().getFeature()));
+            }
+        }
+        return result;
+    }
+
+    private List<BiomeFeature> getAppenders(GenerationStage.Decoration stage, FeatureInjector.Type type, Biome biome) {
+        List<BiomeFeature> result = Collections.emptyList();
+        for (Modifier<FeatureAppender> modifier : getAppenders()) {
+            if (modifier.getModifier().getType() != type) {
+                continue;
+            }
+            if (modifier.getModifier().getStage() != stage) {
+                continue;
+            }
+            if (modifier.getMatcher().getBiomeMatcher().test(biome)) {
+                if (result.isEmpty()) {
+                    result = new ArrayList<>();
+                }
+                result.add(new BiomeFeature(BiomePredicate.ALLOW, modifier.getModifier().getFeature()));
             }
         }
         return result;

@@ -29,6 +29,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.terraforged.fm.FeatureSerializer;
+import net.minecraft.world.gen.GenerationStage;
 
 import java.util.Map;
 import java.util.Optional;
@@ -50,6 +51,21 @@ public class FeatureParser {
         if (root.has("after")) {
             return FeatureSerializer.deserialize(root.get("after"))
                     .map(feature -> new FeatureInjector(feature, FeatureInjector.Type.AFTER));
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<FeatureAppender> parseAppender(JsonObject root) {
+        if (root.has("stage")) {
+            GenerationStage.Decoration stage = GenerationStage.Decoration.valueOf(root.get("stage").getAsString());
+            if (root.has("prepend")) {
+                return FeatureSerializer.deserialize(root.get("prepend"))
+                        .map(feature -> new FeatureAppender(feature, FeatureInjector.Type.BEFORE, stage));
+            }
+            if (root.has("append")) {
+                return FeatureSerializer.deserialize(root.get("append"))
+                        .map(feature -> new FeatureAppender(feature, FeatureInjector.Type.AFTER, stage));
+            }
         }
         return Optional.empty();
     }

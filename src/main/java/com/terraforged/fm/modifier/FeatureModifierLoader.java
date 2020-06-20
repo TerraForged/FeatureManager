@@ -26,10 +26,6 @@
 package com.terraforged.fm.modifier;
 
 import com.google.gson.JsonObject;
-import com.terraforged.fm.transformer.FeatureInjector;
-import com.terraforged.fm.transformer.FeatureParser;
-import com.terraforged.fm.transformer.FeatureReplacer;
-import com.terraforged.fm.transformer.FeatureTransformer;
 import com.terraforged.fm.FeatureManager;
 import com.terraforged.fm.data.DataManager;
 import com.terraforged.fm.matcher.BiomeFeatureMatcher;
@@ -37,6 +33,11 @@ import com.terraforged.fm.matcher.biome.BiomeMatcher;
 import com.terraforged.fm.matcher.biome.BiomeMatcherParser;
 import com.terraforged.fm.matcher.feature.FeatureMatcher;
 import com.terraforged.fm.matcher.feature.FeatureMatcherParser;
+import com.terraforged.fm.transformer.FeatureAppender;
+import com.terraforged.fm.transformer.FeatureInjector;
+import com.terraforged.fm.transformer.FeatureParser;
+import com.terraforged.fm.transformer.FeatureReplacer;
+import com.terraforged.fm.transformer.FeatureTransformer;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -67,6 +68,13 @@ public class FeatureModifierLoader {
         if (!biome.isPresent()) {
             FeatureManager.LOG.error(LOAD, "  Invalid BiomeMatcher in: {}", location);
             return false;
+        }
+
+        Optional<FeatureAppender> appender = FeatureParser.parseAppender(root);
+        if (appender.isPresent()) {
+            BiomeFeatureMatcher biomeFeatureMatcher = new BiomeFeatureMatcher(biome.get(), FeatureMatcher.ANY);
+            modifiers.getAppenders().add(biomeFeatureMatcher, appender.get());
+            return true;
         }
 
         Optional<FeatureMatcher> matcher = FeatureMatcherParser.parse(root);

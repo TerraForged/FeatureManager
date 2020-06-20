@@ -26,11 +26,11 @@
 package com.terraforged.fm;
 
 import com.terraforged.fm.biome.BiomeFeatures;
+import com.terraforged.fm.data.DataManager;
 import com.terraforged.fm.modifier.FeatureModifierLoader;
 import com.terraforged.fm.modifier.FeatureModifiers;
 import com.terraforged.fm.modifier.ModifierSet;
 import com.terraforged.fm.template.TemplateManager;
-import com.terraforged.fm.data.DataManager;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
@@ -108,12 +108,16 @@ public class FeatureManager implements FeatureDecorator {
     private static BiomeFeatures compute(Biome biome, FeatureModifiers modifiers) {
         BiomeFeatures.Builder builder = BiomeFeatures.builder();
         for (GenerationStage.Decoration stage : GenerationStage.Decoration.values()) {
+            builder.add(stage, modifiers.getPrependers(stage, biome));
+
             for (ConfiguredFeature<?, ?> feature : biome.getFeatures(stage)) {
-                ModifierSet modifierSet = modifiers.getFeature(biome, feature);
+                ModifierSet modifierSet = modifiers.getFeature(stage, biome, feature);
                 builder.add(stage, modifierSet.before);
                 builder.add(stage, modifierSet.feature);
                 builder.add(stage, modifierSet.after);
             }
+
+            builder.add(stage, modifiers.getPrependers(stage, biome));
         }
         return builder.build();
     }
