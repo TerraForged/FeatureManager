@@ -33,6 +33,7 @@ public class ObjectPool<T> {
 
     private final int capacity;
     private final List<Item<T>> pool;
+    private final Object lock = new Object();
     private final Supplier<? extends T> supplier;
 
     public ObjectPool(int size, Supplier<? extends T> supplier) {
@@ -42,7 +43,7 @@ public class ObjectPool<T> {
     }
 
     public Item<T> get() {
-        synchronized (pool) {
+        synchronized (lock) {
             if (pool.size() > 0) {
                 return pool.remove(pool.size() - 1).retain();
             }
@@ -50,16 +51,9 @@ public class ObjectPool<T> {
         return new Item<>(supplier.get(), this);
     }
 
-    public int size() {
-        synchronized (pool) {
-            return pool.size();
-        }
-    }
-
     private boolean restore(Item<T> item) {
-        synchronized (pool) {
-            int size = pool.size();
-            if (size < capacity) {
+        synchronized (lock) {
+            if (pool.size() < capacity) {
                 pool.add(item);
                 return true;
             }
