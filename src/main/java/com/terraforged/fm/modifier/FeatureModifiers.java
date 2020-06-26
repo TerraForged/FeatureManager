@@ -37,6 +37,7 @@ import com.terraforged.fm.transformer.FeatureAppender;
 import com.terraforged.fm.transformer.FeatureInjector;
 import com.terraforged.fm.transformer.FeatureReplacer;
 import com.terraforged.fm.transformer.FeatureTransformer;
+import com.terraforged.fm.transformer.InjectionPosition;
 import com.terraforged.fm.util.FeatureDebugger;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
@@ -86,12 +87,8 @@ public class FeatureModifiers extends Event {
         transformers.sort();
     }
 
-    public List<BiomeFeature> getPrependers(GenerationStage.Decoration stage, Biome biome) {
-        return getAppenders(stage, FeatureInjector.Type.BEFORE, biome);
-    }
-
-    public List<BiomeFeature> getAppenders(GenerationStage.Decoration stage, Biome biome) {
-        return getAppenders(stage, FeatureInjector.Type.AFTER, biome);
+    public List<BiomeFeature> getAppenders(GenerationStage.Decoration stage, Biome biome, InjectionPosition position) {
+        return getAppenders(stage, position, biome);
     }
 
     public ModifierSet getFeature(GenerationStage.Decoration stage, Biome biome, ConfiguredFeature<?, ?> feature) {
@@ -108,8 +105,8 @@ public class FeatureModifiers extends Event {
                 predicate = getPredicate(biome, element);
             }
 
-            List<BiomeFeature> before = getInjectors(biome, predicate, element, FeatureInjector.Type.BEFORE);
-            List<BiomeFeature> after = getInjectors(biome, predicate, element, FeatureInjector.Type.AFTER);
+            List<BiomeFeature> before = getInjectors(biome, predicate, element, InjectionPosition.BEFORE);
+            List<BiomeFeature> after = getInjectors(biome, predicate, element, InjectionPosition.AFTER);
 
             return new ModifierSet(new BiomeFeature(predicate, result), before, after);
         } catch (Throwable t) {
@@ -155,10 +152,10 @@ public class FeatureModifiers extends Event {
         }
     }
 
-    private List<BiomeFeature> getInjectors(Biome biome, FeaturePredicate predicate, JsonElement element, FeatureInjector.Type type) {
+    private List<BiomeFeature> getInjectors(Biome biome, FeaturePredicate predicate, JsonElement element, InjectionPosition type) {
         List<BiomeFeature> result = Collections.emptyList();
         for (Modifier<FeatureInjector> modifier : getInjectors()) {
-            if (modifier.getModifier().getType() != type) {
+            if (modifier.getModifier().getPosition() != type) {
                 continue;
             }
             if (modifier.getMatcher().test(biome, element)) {
@@ -171,10 +168,10 @@ public class FeatureModifiers extends Event {
         return result;
     }
 
-    private List<BiomeFeature> getAppenders(GenerationStage.Decoration stage, FeatureInjector.Type type, Biome biome) {
+    private List<BiomeFeature> getAppenders(GenerationStage.Decoration stage, InjectionPosition position, Biome biome) {
         List<BiomeFeature> result = Collections.emptyList();
         for (Modifier<FeatureAppender> modifier : getAppenders()) {
-            if (modifier.getModifier().getType() != type) {
+            if (modifier.getModifier().getPosition() != position) {
                 continue;
             }
             if (modifier.getModifier().getStage() != stage) {

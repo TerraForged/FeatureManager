@@ -4,24 +4,19 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class FeatureInjector {
 
-    private final Type type;
+    private final InjectionPosition position;
     private final ConfiguredFeature<?, ?> feature;
 
-    public FeatureInjector(ConfiguredFeature<?, ?> feature, Type type) {
+    public FeatureInjector(ConfiguredFeature<?, ?> feature, InjectionPosition position) {
         this.feature = feature;
-        this.type = type;
+        this.position = position;
     }
 
     public ConfiguredFeature<?, ?> getFeature() {
         return feature;
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public enum Type {
-        BEFORE,
-        AFTER,
+    public InjectionPosition getPosition() {
+        return position;
     }
 }

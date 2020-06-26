@@ -31,7 +31,7 @@ import com.terraforged.fm.modifier.FeatureModifierLoader;
 import com.terraforged.fm.modifier.FeatureModifiers;
 import com.terraforged.fm.modifier.ModifierSet;
 import com.terraforged.fm.template.TemplateManager;
-import net.minecraft.world.IWorld;
+import com.terraforged.fm.transformer.InjectionPosition;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -84,7 +84,7 @@ public class FeatureManager implements FeatureDecorator {
         TemplateManager.getInstance().clear();
     }
 
-    public static FeatureManager create(IWorld world, FeatureModifiers modifiers) {
+    public static FeatureManager create(FeatureModifiers modifiers) {
         LOG.debug(INIT, "Initializing FeatureManager");
         int predicates = modifiers.getPredicates().size();
         int replacers = modifiers.getReplacers().size();
@@ -108,7 +108,8 @@ public class FeatureManager implements FeatureDecorator {
     private static BiomeFeatures compute(Biome biome, FeatureModifiers modifiers) {
         BiomeFeatures.Builder builder = BiomeFeatures.builder();
         for (GenerationStage.Decoration stage : GenerationStage.Decoration.values()) {
-            builder.add(stage, modifiers.getPrependers(stage, biome));
+            // add 'prepend' injectors to the head of the feature list
+            builder.add(stage, modifiers.getAppenders(stage, biome, InjectionPosition.HEAD));
 
             for (ConfiguredFeature<?, ?> feature : biome.getFeatures(stage)) {
                 ModifierSet modifierSet = modifiers.getFeature(stage, biome, feature);
@@ -117,7 +118,8 @@ public class FeatureManager implements FeatureDecorator {
                 builder.add(stage, modifierSet.after);
             }
 
-            builder.add(stage, modifiers.getPrependers(stage, biome));
+            // add 'append' injectors to the tail of the feature list
+            builder.add(stage, modifiers.getAppenders(stage, biome, InjectionPosition.TAIL));
         }
         return builder.build();
     }

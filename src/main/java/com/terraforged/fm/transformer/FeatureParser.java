@@ -46,11 +46,11 @@ public class FeatureParser {
     public static Optional<FeatureInjector> parseInjector(JsonObject root) {
         if (root.has("before")) {
             return FeatureSerializer.deserialize(root.get("before"))
-                    .map(feature -> new FeatureInjector(feature, FeatureInjector.Type.BEFORE));
+                    .map(feature -> new FeatureInjector(feature, InjectionPosition.BEFORE));
         }
         if (root.has("after")) {
             return FeatureSerializer.deserialize(root.get("after"))
-                    .map(feature -> new FeatureInjector(feature, FeatureInjector.Type.AFTER));
+                    .map(feature -> new FeatureInjector(feature, InjectionPosition.AFTER));
         }
         return Optional.empty();
     }
@@ -60,11 +60,11 @@ public class FeatureParser {
             GenerationStage.Decoration stage = GenerationStage.Decoration.valueOf(root.get("stage").getAsString());
             if (root.has("prepend")) {
                 return FeatureSerializer.deserialize(root.get("prepend"))
-                        .map(feature -> new FeatureAppender(feature, FeatureInjector.Type.BEFORE, stage));
+                        .map(feature -> new FeatureAppender(feature, InjectionPosition.HEAD, stage));
             }
             if (root.has("append")) {
                 return FeatureSerializer.deserialize(root.get("append"))
-                        .map(feature -> new FeatureAppender(feature, FeatureInjector.Type.AFTER, stage));
+                        .map(feature -> new FeatureAppender(feature, InjectionPosition.TAIL, stage));
             }
         }
         return Optional.empty();

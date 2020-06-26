@@ -7,7 +7,7 @@ public class FeatureAppender extends FeatureInjector {
 
     private final GenerationStage.Decoration stage;
 
-    public FeatureAppender(ConfiguredFeature<?, ?> feature, Type type, GenerationStage.Decoration stage) {
+    public FeatureAppender(ConfiguredFeature<?, ?> feature, InjectionPosition type, GenerationStage.Decoration stage) {
         super(feature, type);
         this.stage = stage;
     }
