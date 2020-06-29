@@ -29,16 +29,16 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.Heightmap;
 
-public class MinHeight implements FeaturePredicate {
+public class MaxHeight implements FeaturePredicate {
 
     private final int height;
 
-    public MinHeight(int height) {
+    public MaxHeight(int height) {
         this.height = height;
     }
 
     @Override
     public boolean test(IChunk chunk, Biome biome) {
-        return chunk.getTopBlockY(Heightmap.Type.WORLD_SURFACE, 8, 8) > height;
+        return chunk.getTopBlockY(Heightmap.Type.WORLD_SURFACE, 8, 8) < height;
     }
 }
