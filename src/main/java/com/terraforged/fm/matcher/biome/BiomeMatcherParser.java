@@ -76,6 +76,16 @@ public class BiomeMatcherParser {
                     collector.add(b);
                 }
             }
+        } else if (biome.contains("*")) {
+            String[] parts = biome.split("\\*");
+            if (parts.length == 2) {
+                for (Biome b : ForgeRegistries.BIOMES) {
+                    String name = b.getRegistryName() + "";
+                    if (name.startsWith(parts[0]) && name.endsWith(parts[1])) {
+                        collector.add(b);
+                    }
+                }
+            }
         } else {
             ResourceLocation name = new ResourceLocation(biome);
             if (ForgeRegistries.BIOMES.containsKey(name)) {
