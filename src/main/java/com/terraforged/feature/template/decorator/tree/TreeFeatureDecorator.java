@@ -40,6 +40,11 @@ public class TreeFeatureDecorator implements Decorator<TreeBuffer> {
 
     @Override
     public void apply(TreeBuffer world, Random random) {
+        // don't decorate if no logs/leaves were placed!
+        if (world.getLogs().isEmpty() || world.getLeaves().isEmpty()) {
+            return;
+        }
+
         decorator.func_225576_a_(
                 world.getDelegate(),
                 random,
