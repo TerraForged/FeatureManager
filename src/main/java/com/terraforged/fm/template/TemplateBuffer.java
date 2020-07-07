@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TemplateBuffer {
+public class TemplateBuffer extends PasteBuffer {
 
     private static final ObjectPool<TemplateBuffer> pool = new ObjectPool<>(10, TemplateBuffer::new);
 

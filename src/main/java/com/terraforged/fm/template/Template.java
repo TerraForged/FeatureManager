@@ -8,6 +8,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.util.AxisRotation;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -43,6 +45,7 @@ public class Template {
     public boolean pasteNormal(IWorld world, BlockPos origin, Mirror mirror, Rotation rotation, PasteConfig config) {
         boolean placed = false;
         BlockReader reader = new BlockReader();
+        PasteBuffer buffer = new PasteBuffer();
         for (Template.BlockInfo block : blocks) {
             BlockState state = block.state.mirror(mirror).rotate(rotation);
             if (!config.pasteAir && state.getBlock() == Blocks.AIR) {
@@ -59,8 +62,10 @@ public class Template {
             }
 
             world.setBlockState(pos, state, 2);
+            buffer.record(pos);
             placed = true;
         }
+        Template.updatePostPlacement(world, buffer);
         return placed;
     }
 
@@ -68,6 +73,7 @@ public class Template {
         try (ObjectPool.Item<TemplateBuffer> item = TemplateBuffer.pooled()) {
             BlockReader reader = new BlockReader();
             TemplateBuffer buffer = item.getValue().init(world, origin);
+            buffer.configure(config);
 
             for (Template.BlockInfo block : blocks) {
                 BlockState state = block.state.mirror(mirror).rotate(rotation);
@@ -84,11 +90,52 @@ public class Template {
                 } else if (buffer.test(block.pos)) {
                     placed = true;
                     world.setBlockState(block.pos, block.state, 2);
+                    buffer.record(block.pos);
                 }
             }
 
+            Template.updatePostPlacement(world, buffer);
+
             buffer.flush();
             return placed;
+        }
+    }
+
+    private static void updatePostPlacement(IWorld world, PasteBuffer buffer) {
+        PasteBuffer.Iterator iterator = buffer.iterator();
+        while (iterator.next()) {
+            BlockPos pos = iterator.get();
+            updatePostPlacement(world, pos, AxisRotation.NONE);
+            updatePostPlacement(world, pos, AxisRotation.FORWARD);
+            updatePostPlacement(world, pos, AxisRotation.BACKWARD);
+        }
+    }
+
+    private static void updatePostPlacement(IWorld world, BlockPos pos, AxisRotation rotation) {
+        Direction.Axis axis = rotation.reverse().rotate(Direction.Axis.Z);
+
+        Direction dir1 = Direction.getFacingFromAxisDirection(axis, Direction.AxisDirection.NEGATIVE);
+        updatePostPlacement(world, pos, dir1, 3);
+
+        Direction dir2 = Direction.getFacingFromAxisDirection(axis, Direction.AxisDirection.POSITIVE);
+        updatePostPlacement(world, pos, dir2, 3);
+    }
+
+    private static void updatePostPlacement(IWorld world, BlockPos pos1, Direction direction, int flag) {
+        BlockPos pos2 = pos1.offset(direction);
+        BlockState state1 = world.getBlockState(pos1);
+        BlockState state2 = world.getBlockState(pos2);
+
+        // update state at pos1 - the input position
+        BlockState result1 = state1.updatePostPlacement(direction, state2, world, pos1, pos2);
+        if (result1 != state1) {
+            world.setBlockState(pos1, result1, flag & -2 | 16);
+        }
+
+        // update state at pos2 - the neighbour
+        BlockState result2 = state2.updatePostPlacement(direction.getOpposite(), result1, world, pos2, pos1);
+        if (result2 != state2) {
+            world.setBlockState(pos2, result2, flag & -2 | 16);
         }
     }
 
