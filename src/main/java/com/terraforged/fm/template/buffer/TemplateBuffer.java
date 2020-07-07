@@ -1,5 +1,8 @@
-package com.terraforged.fm.template;
+package com.terraforged.fm.template.buffer;
 
+import com.terraforged.fm.template.BlockUtils;
+import com.terraforged.fm.template.PasteConfig;
+import com.terraforged.fm.template.Template;
 import com.terraforged.fm.util.ObjectPool;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
