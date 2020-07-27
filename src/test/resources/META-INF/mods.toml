@@ -1,8 +1,0 @@
-modLoader="javafml"
-loaderVersion="[25,)"
-[[mods]]
-    modId="example_mod"
-    displayName="Example Mod"
-    version="0.0.1"
-    authors="dags"
-    description="Example use of FeatureManager"
