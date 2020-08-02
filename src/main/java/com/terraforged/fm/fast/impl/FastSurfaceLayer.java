@@ -12,7 +12,7 @@ import java.util.Random;
 public class FastSurfaceLayer extends FastDecorator<NoPlacementConfig> {
 
     public FastSurfaceLayer() {
-        super(NoPlacementConfig::deserialize);
+        super(NoPlacementConfig.field_236555_a_);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class FastSurfaceLayer extends FastDecorator<NoPlacementConfig> {
     }
 
     @Override
-    protected boolean next(IWorld world, ChunkGenerator<?> generator, Random random, NoPlacementConfig config, BlockPos pos, BlockPos.Mutable mutable, int i) {
+    protected boolean next(IWorld world, ChunkGenerator generator, Random random, NoPlacementConfig config, BlockPos pos, BlockPos.Mutable mutable, int i) {
         int x = mutable.getX();
         int z = mutable.getZ();
         if (i == 0) {

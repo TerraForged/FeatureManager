@@ -36,24 +36,25 @@ public class DecoratorConfig<T extends IWorld> {
         List<Decorator<T>> defaults = Collections.emptyList();
         Map<ResourceLocation, List<Decorator<T>>> biomes = Collections.emptyMap();
         if (config != null) {
-            JsonObject def = config.getAsJsonObject("default");
-            if (def != null) {
-                defaults = parseDecorators(factory, def);
-            }
+            if (config.has("default")) {
+                defaults = parseDecorators(factory, config.getAsJsonObject("default"));
 
-            for (Map.Entry<String, JsonElement> e : config.entrySet()) {
-                if (e.getKey().equals("default")) {
-                    continue;
-                }
-
-                ResourceLocation biome = new ResourceLocation(e.getKey());
-                List<Decorator<T>> decorators = parseDecorators(factory, e.getValue().getAsJsonObject());
-                if (!decorators.isEmpty()) {
-                    if (biomes.isEmpty()) {
-                        biomes = new HashMap<>();
+                for (Map.Entry<String, JsonElement> e : config.entrySet()) {
+                    if (e.getKey().equals("default")) {
+                        continue;
                     }
-                    biomes.put(biome, decorators);
+
+                    ResourceLocation biome = new ResourceLocation(e.getKey());
+                    List<Decorator<T>> decorators = parseDecorators(factory, e.getValue().getAsJsonObject());
+                    if (!decorators.isEmpty()) {
+                        if (biomes.isEmpty()) {
+                            biomes = new HashMap<>();
+                        }
+                        biomes.put(biome, decorators);
+                    }
                 }
+            } else {
+                defaults = parseDecorators(factory, config);
             }
         }
         return new DecoratorConfig<>(factory, defaults, biomes);

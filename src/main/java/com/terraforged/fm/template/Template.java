@@ -1,7 +1,7 @@
 package com.terraforged.fm.template;
 
-import com.terraforged.fm.template.buffer.PasteBuffer;
 import com.terraforged.fm.template.buffer.BufferIterator;
+import com.terraforged.fm.template.buffer.PasteBuffer;
 import com.terraforged.fm.template.buffer.TemplateBuffer;
 import com.terraforged.fm.util.BlockReader;
 import com.terraforged.fm.util.ObjectPool;

@@ -11,7 +11,7 @@ import java.util.Random;
 public class FastCountRange extends FastDecorator<CountRangeConfig> {
 
     public FastCountRange() {
-        super(CountRangeConfig::deserialize);
+        super(CountRangeConfig.field_236485_a_);
     }
 
     @Override
@@ -20,7 +20,7 @@ public class FastCountRange extends FastDecorator<CountRangeConfig> {
     }
 
     @Override
-    protected boolean next(IWorld world, ChunkGenerator<?> generator, Random random, CountRangeConfig config, BlockPos pos, BlockPos.Mutable mutable, int i) {
+    protected boolean next(IWorld world, ChunkGenerator generator, Random random, CountRangeConfig config, BlockPos pos, BlockPos.Mutable mutable, int i) {
         int x = random.nextInt(16) + pos.getX();
         int z = random.nextInt(16) + pos.getZ();
         int y = random.nextInt(config.maximum - config.topOffset) + config.bottomOffset;

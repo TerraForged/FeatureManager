@@ -29,18 +29,19 @@ import com.terraforged.fm.biome.BiomeFeature;
 import com.terraforged.fm.biome.BiomeFeatures;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ISeedReader;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.WorldGenRegion;
+import net.minecraft.world.gen.feature.structure.StructureManager;
 
 public interface FeatureDecorator {
 
     FeatureManager getFeatureManager();
 
-    default void decorate(ChunkGenerator<?> generator, WorldGenRegion region) {
+    default void decorate(ChunkGenerator generator, StructureManager structures, WorldGenRegion region) {
         int chunkX = region.getMainChunkX();
         int chunkZ = region.getMainChunkZ();
         int blockX = chunkX << 4;
@@ -50,10 +51,10 @@ public interface FeatureDecorator {
         BlockPos pos = new BlockPos(blockX, 0, blockZ);
         Biome biome = region.getBiomeManager().getBiome(pos.add(8, 8, 8));
 
-        decorate(generator, region, chunk, biome, pos);
+        decorate(generator, structures, region, chunk, biome, pos);
     }
 
-    default void decorate(ChunkGenerator<?> generator, IWorld region, IChunk chunk, Biome biome, BlockPos pos) {
+    default void decorate(ChunkGenerator generator, StructureManager structures, ISeedReader region, IChunk chunk, Biome biome, BlockPos pos) {
         SharedSeedRandom random = new SharedSeedRandom();
         long decorationSeed = random.setDecorationSeed(region.getSeed(), pos.getX(), pos.getZ());
 
@@ -64,7 +65,7 @@ public interface FeatureDecorator {
                 random.setFeatureSeed(decorationSeed, featureOrdinal++, stage.ordinal());
 
                 if (feature.getPredicate().test(chunk, biome)) {
-                    feature.getFeature().place(region, generator, random, pos);
+                    feature.getFeature().func_236265_a_(region, structures, generator, random, pos);
                 }
             }
         }

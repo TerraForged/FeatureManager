@@ -2,16 +2,18 @@ package com.terraforged.fm.template.feature;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
-import com.terraforged.fm.template.type.FeatureType;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import com.terraforged.fm.template.PasteConfig;
 import com.terraforged.fm.template.Template;
 import com.terraforged.fm.template.TemplateLoader;
 import com.terraforged.fm.template.TemplateManager;
 import com.terraforged.fm.template.decorator.DecoratorConfig;
+import com.terraforged.fm.template.type.FeatureType;
 import com.terraforged.fm.template.type.FeatureTypes;
 import com.terraforged.fm.util.Json;
+import com.terraforged.fm.util.codec.Codecs;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 
@@ -21,6 +23,10 @@ import java.util.List;
 public class TemplateFeatureConfig implements IFeatureConfig {
 
     public static final TemplateFeatureConfig NONE = new TemplateFeatureConfig();
+    public static final Codec<TemplateFeatureConfig> CODEC = Codecs.create(
+            TemplateFeatureConfig::serialize,
+            TemplateFeatureConfig::deserialize
+    );
 
     public final ResourceLocation name;
     public final FeatureType type;
@@ -45,14 +51,13 @@ public class TemplateFeatureConfig implements IFeatureConfig {
         type.register(name);
     }
 
-    @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+    public static <T> Dynamic<T> serialize(TemplateFeatureConfig config, DynamicOps<T> ops) {
         return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(
-                ops.createString("template"), ops.createString(name + "")
+                ops.createString("template"), ops.createString(config.name.toString())
         )));
     }
 
-    public static TemplateFeatureConfig deserialize(Dynamic<?> dynamic) {
+    public static <T> TemplateFeatureConfig deserialize(Dynamic<T> dynamic, DynamicOps<T> ops) {
         ResourceLocation name = new ResourceLocation(dynamic.get("template").asString(""));
         return TemplateManager.getInstance().getTemplateConfig(name);
     }

@@ -32,7 +32,6 @@ import com.terraforged.fm.transformer.FeatureInjector;
 import com.terraforged.fm.transformer.FeatureReplacer;
 import com.terraforged.fm.transformer.FeatureTransformer;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.WorldType;
 import net.minecraftforge.eventbus.api.Event;
 
 public class FeatureModifierEvent extends Event {
@@ -47,10 +46,6 @@ public class FeatureModifierEvent extends Event {
 
     public IWorld getWorld() {
         return world;
-    }
-
-    public WorldType getWorldType() {
-        return getWorld().getWorld().getWorldType();
     }
 
     public ModifierList<FeatureReplacer> getReplacers() {

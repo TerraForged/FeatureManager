@@ -30,7 +30,7 @@ import com.terraforged.fm.template.decorator.DecoratorBuffer;
 import net.minecraft.block.BlockState;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.IWorld;
 
 import java.util.Collections;
@@ -74,12 +74,12 @@ public class TreeDecoratorBuffer extends BoundsRecorder implements DecoratorBuff
 
         logList = getLogPositions().stream()
                 .map(pos -> pos.add(offset))
-                .sorted(Comparator.comparingInt(Vec3i::getY))
+                .sorted(Comparator.comparingInt(Vector3i::getY))
                 .collect(Collectors.toList());
 
         leafList = getLeafPositions().stream()
                 .map(pos -> pos.add(offset))
-                .sorted(Comparator.comparingInt(Vec3i::getY))
+                .sorted(Comparator.comparingInt(Vector3i::getY))
                 .collect(Collectors.toList());
     }
 
@@ -93,14 +93,14 @@ public class TreeDecoratorBuffer extends BoundsRecorder implements DecoratorBuff
 
     public List<BlockPos> getLogs() {
         if (logList == null) {
-            logList = getLogPositions().stream().sorted(Comparator.comparingInt(Vec3i::getY)).collect(Collectors.toList());
+            logList = getLogPositions().stream().sorted(Comparator.comparingInt(Vector3i::getY)).collect(Collectors.toList());
         }
         return logList;
     }
 
     public List<BlockPos> getLeaves() {
         if (leafList == null) {
-            leafList = getLeafPositions().stream().sorted(Comparator.comparingInt(Vec3i::getY)).collect(Collectors.toList());
+            leafList = getLeafPositions().stream().sorted(Comparator.comparingInt(Vector3i::getY)).collect(Collectors.toList());
         }
         return leafList;
     }

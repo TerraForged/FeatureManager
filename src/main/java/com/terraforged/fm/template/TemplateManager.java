@@ -1,9 +1,9 @@
 package com.terraforged.fm.template;
 
-import com.terraforged.fm.template.feature.TemplateFeature;
-import com.terraforged.fm.template.feature.TemplateFeatureConfig;
 import com.terraforged.fm.FeatureManager;
 import com.terraforged.fm.data.DataManager;
+import com.terraforged.fm.template.feature.TemplateFeature;
+import com.terraforged.fm.template.feature.TemplateFeatureConfig;
 import com.terraforged.fm.template.type.FeatureTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.gen.feature.Feature;

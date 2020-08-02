@@ -69,7 +69,7 @@ public class DataManager implements AutoCloseable {
     }
 
     public static DataManager of(File dir) {
-        SimpleReloadableResourceManager manager = new SimpleReloadableResourceManager(ResourcePackType.SERVER_DATA, Thread.currentThread());
+        SimpleReloadableResourceManager manager = new SimpleReloadableResourceManager(ResourcePackType.SERVER_DATA);
         ResourcePackList<ResourcePackInfo> packList = new ResourcePackList<>(ResourcePackInfo::new);
 
         packList.addPackFinder(new ModDataPackFinder());

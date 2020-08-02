@@ -20,6 +20,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 repositories {
     mavenCentral()
     jcenter()
+    maven { url "https://maven.tterrag.com/" }
 }
 
 dependencies {

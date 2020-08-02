@@ -1,30 +1,28 @@
 package com.terraforged.fm.data;
 
-import com.terraforged.fm.FeatureManager;
 import net.minecraft.resources.FolderPackFinder;
+import net.minecraft.resources.IPackNameDecorator;
 import net.minecraft.resources.ResourcePackInfo;
 import org.jline.utils.Log;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.function.Consumer;
 
 public class FolderDataPackFinder extends FolderPackFinder {
 
+    public static final IPackNameDecorator TF_FOLDER = IPackNameDecorator.create("pack.source.folder");
+
     public FolderDataPackFinder(File folderIn) {
-        super(folderIn);
+        this(folderIn, TF_FOLDER);
+    }
+
+    public FolderDataPackFinder(File folderIn, IPackNameDecorator decorator) {
+        super(folderIn, decorator);
     }
 
     @Override
-    public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> map, ResourcePackInfo.IFactory<T> infoFactory) {
+    public <T extends ResourcePackInfo> void func_230230_a_(Consumer<T> consumer, ResourcePackInfo.IFactory<T> factory) {
         Log.debug("Searching for DataPacks...");
-        Set<String> initial = new HashSet<>(map.keySet());
-        super.addPackInfosToMap(map, infoFactory);
-        for (Map.Entry<String, ?> e : map.entrySet()) {
-            if (!initial.contains(e.getKey())) {
-                FeatureManager.LOG.debug("Added DataPack: {}", e.getKey());
-            }
-        }
+        super.func_230230_a_(consumer, factory);
     }
 }

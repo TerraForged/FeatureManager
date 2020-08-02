@@ -1,17 +1,18 @@
 package com.terraforged.fm.template.feature;
 
-import com.terraforged.fm.template.decorator.Decorator;
 import com.terraforged.fm.FeatureManager;
 import com.terraforged.fm.template.Template;
+import com.terraforged.fm.template.decorator.Decorator;
 import com.terraforged.fm.template.decorator.DecoratorConfig;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ISeedReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.structure.StructureManager;
 
 import java.util.List;
 import java.util.Random;
@@ -19,12 +20,12 @@ import java.util.Random;
 public class TemplateFeature extends Feature<TemplateFeatureConfig> {
 
     public TemplateFeature(String namespace) {
-        super(TemplateFeatureConfig::deserialize);
+        super(TemplateFeatureConfig.CODEC);
         setRegistryName(namespace, "template");
     }
 
     @Override
-    public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, TemplateFeatureConfig config) {
+    public boolean func_230362_a_(ISeedReader world, StructureManager structures, ChunkGenerator generator, Random rand, BlockPos pos, TemplateFeatureConfig config) {
         if (config.type.getPlacement().canPlaceAt(world, pos)) {
             return paste(world, rand, pos, config, config.decorator);
         }

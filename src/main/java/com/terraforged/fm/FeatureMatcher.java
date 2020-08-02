@@ -3,7 +3,6 @@ package com.terraforged.fm;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
-import com.mojang.datafixers.types.JsonOps;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -21,7 +20,7 @@ public class FeatureMatcher implements Predicate<ConfiguredFeature<?, ?>> {
     @Override
     public boolean test(ConfiguredFeature<?, ?> feature) {
         try {
-            return test(feature.serialize(JsonOps.INSTANCE).getValue());
+            return test(FeatureSerializer.serialize(feature));
         } catch (Throwable t) {
             return false;
         }

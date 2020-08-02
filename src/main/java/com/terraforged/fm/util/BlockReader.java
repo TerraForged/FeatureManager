@@ -26,8 +26,8 @@
 package com.terraforged.fm.util;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -55,7 +55,7 @@ public class BlockReader implements IBlockReader {
     }
 
     @Override
-    public IFluidState getFluidState(BlockPos pos) {
+    public FluidState getFluidState(BlockPos pos) {
         return Fluids.EMPTY.getDefaultState();
     }
 }

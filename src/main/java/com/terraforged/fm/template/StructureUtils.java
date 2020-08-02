@@ -1,29 +1,24 @@
 package com.terraforged.fm.template;
 
-import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.structure.Structure;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class StructureUtils {
 
-    public static final List<Structure<?>> SURFACE_STRUCTURES = ImmutableList.of(
-            Structure.VILLAGE,
-            Structure.JUNGLE_TEMPLE,
-            Structure.PILLAGER_OUTPOST,
-            Structure.SWAMP_HUT,
-            Structure.IGLOO,
-            Structure.DESERT_PYRAMID,
-            Structure.WOODLAND_MANSION
-    );
+    public static final List<Structure<?>> SURFACE_STRUCTURES = Structure.field_236365_a_.values().stream()
+            .filter(structure -> structure.func_236396_f_() == GenerationStage.Decoration.SURFACE_STRUCTURES)
+            .collect(Collectors.toList());
 
     public static boolean hasOvergroundStructure(IChunk chunk) {
-        Map<String, LongSet> references = chunk.getStructureReferences();
+        Map<Structure<?>, LongSet> references = chunk.getStructureReferences();
         for (Structure<?> structure : SURFACE_STRUCTURES) {
-            LongSet refs = references.get(structure.getStructureName());
+            LongSet refs = references.get(structure);
             if (refs != null && refs.size() > 0) {
                 return true;
             }

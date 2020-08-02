@@ -25,7 +25,7 @@
 
 package com.terraforged.fm.template.decorator;
 
-import com.terraforged.fm.util.WorldDelegate;
+import com.terraforged.fm.util.delegate.WorldDelegate;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableBoundingBox;
@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class BoundsRecorder extends WorldDelegate {
+public abstract class BoundsRecorder extends WorldDelegate<IWorld> {
 
     private BlockPos.Mutable min = null;
     private BlockPos.Mutable max = null;

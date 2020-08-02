@@ -29,27 +29,31 @@ import com.terraforged.fm.template.BlockUtils;
 import com.terraforged.fm.template.feature.Placement;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
 import net.minecraft.world.gen.feature.BaseTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeature;
 
-public abstract class TreePlacement extends AbstractTreeFeature<BaseTreeFeatureConfig> {
+public abstract class TreePlacement extends TreeFeature {
 
-    public static final Placement PLACEMENT = (world, pos) -> isSoil(world, pos.down(), null) && clearOverhead(world, pos);
+    public static final Placement PLACEMENT = (world, pos) -> isSoil(world, pos.down()) && clearOverhead(world, pos);
 
     private TreePlacement() {
-        super(BaseTreeFeatureConfig::deserialize);
+        super(BaseTreeFeatureConfig.CODEC_BASE_TREE_FEATURE_CONFIG);
     }
 
     private static boolean clearOverhead(IWorld world, BlockPos pos) {
-        try (BlockPos.PooledMutable mutable = BlockPos.PooledMutable.retain()) {
-            int max = Math.min(world.getMaxHeight(), pos.getY() + 20);
-            for (int y = pos.getY(); y < max; y++) {
-                mutable.setPos(pos.getX(), y, pos.getZ());
-                if (BlockUtils.isSolid(world, mutable) && !isAirOrLeaves(world, mutable)) {
-                    return false;
-                }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        // world.getMaxHeight ?
+        int max = Math.min(world.func_234938_ad_(), pos.getY() + 20);
+        for (int y = pos.getY(); y < max; y++) {
+            mutable.setPos(pos.getX(), y, pos.getZ());
+            if (BlockUtils.isSolid(world, mutable) && !isAirOrLeavesAt(world, mutable)) {
+                return false;
             }
         }
         return true;
+    }
+
+    private static boolean isSoil(IWorld world, BlockPos pos) {
+        return false;
     }
 }

@@ -1,6 +1,5 @@
 package com.terraforged.fm.util;
 
-import com.mojang.datafixers.types.JsonOps;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredRandomFeatureList;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
@@ -109,7 +108,7 @@ public class FeatureDebugger {
         }
 
         try {
-            config.serialize(JsonOps.INSTANCE);
+//            config.serialize(JsonOps.INSTANCE);
             return true;
         } catch (Throwable t) {
             list.add("config: " + config.getClass().getName() + ", error: " + t.getMessage());
@@ -136,7 +135,7 @@ public class FeatureDebugger {
             list.add("null decorator config");
         } else {
             try {
-                decorator.config.serialize(JsonOps.INSTANCE);
+//                decorator.config.serialize(JsonOps.INSTANCE);
             } catch (Throwable t) {
                 valid = false;
                 list.add("placement config: " + decorator.config.getClass().getName() + ", error: " + t.getMessage());
