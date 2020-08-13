@@ -27,35 +27,36 @@ package com.terraforged.fm.matcher.biome;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.terraforged.fm.GameContext;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class BiomeMatcherParser {
 
-    public static Optional<BiomeMatcher> parse(JsonObject root) {
+    public static Optional<BiomeMatcher> parse(JsonObject root, GameContext context) {
         if (root.has("biomes")) {
-            return parse(root.get("biomes"));
+            return parse(root.get("biomes"), context);
         }
         return Optional.of(BiomeMatcher.ANY);
     }
 
-    public static Optional<BiomeMatcher> parse(JsonElement element) {
+    public static Optional<BiomeMatcher> parse(JsonElement element, GameContext context) {
         Collector collector = new Collector();
         if (element.isJsonPrimitive()) {
             String biome = element.getAsString();
             if (biome.equals("*")) {
                 return Optional.of(BiomeMatcher.ANY);
             }
-            collectBiomes(biome, collector);
+            collectBiomes(biome, collector, context);
         } else if (element.isJsonArray()) {
             for (JsonElement e : element.getAsJsonArray()) {
-                collectBiomes(e.getAsString(), collector);
+                collectBiomes(e.getAsString(), collector, context);
             }
         }
         if (collector.first == null) {
@@ -67,11 +68,11 @@ public class BiomeMatcherParser {
         return Optional.of(BiomeMatcher.of(collector.all));
     }
 
-    private static void collectBiomes(String biome, Collector collector) {
+    private static void collectBiomes(String biome, Collector collector, GameContext context) {
         if (biome.endsWith("*")) {
             biome = biome.substring(0, biome.length() - 1);
-            for (Biome b : ForgeRegistries.BIOMES) {
-                String name = b.getRegistryName() + "";
+            for (Biome b : context.biomes) {
+                String name = context.biomes.getName(b);
                 if (name.startsWith(biome)) {
                     collector.add(b);
                 }
@@ -79,25 +80,27 @@ public class BiomeMatcherParser {
         } else if (biome.contains("*")) {
             String[] parts = biome.split("\\*");
             if (parts.length == 2) {
-                for (Biome b : ForgeRegistries.BIOMES) {
-                    String name = b.getRegistryName() + "";
+                for (Biome b : context.biomes) {
+                    String name = context.biomes.getName(b);
                     if (name.startsWith(parts[0]) && name.endsWith(parts[1])) {
                         collector.add(b);
                     }
                 }
             }
         } else {
-            ResourceLocation name = new ResourceLocation(biome);
-            if (ForgeRegistries.BIOMES.containsKey(name)) {
-                collector.add(ForgeRegistries.BIOMES.getValue(name));
-            }
+            context.biomes.get(new ResourceLocation(biome)).ifPresent(collector);
         }
     }
 
-    private static class Collector {
+    private static class Collector implements Consumer<Biome> {
 
         private Biome first = null;
         private Set<Biome> all = Collections.emptySet();
+
+        @Override
+        public void accept(Biome biome) {
+            add(biome);
+        }
 
         private void add(Biome biome) {
             if (first == null) {

@@ -25,10 +25,10 @@ public class DataManager implements AutoCloseable {
     public static final Predicate<String> NBT = s -> s.endsWith(".nbt");
     public static final Predicate<String> JSON = s -> s.endsWith(".json");
 
-    private final ResourcePackList<ResourcePackInfo> packList;
+    private final ResourcePackList packList;
     private final IResourceManager resourceManager;
 
-    public DataManager(IResourceManager resourceManager, ResourcePackList<ResourcePackInfo> packList) {
+    public DataManager(IResourceManager resourceManager, ResourcePackList packList) {
         this.resourceManager = resourceManager;
         this.packList = packList;
     }
@@ -70,7 +70,7 @@ public class DataManager implements AutoCloseable {
 
     public static DataManager of(File dir) {
         SimpleReloadableResourceManager manager = new SimpleReloadableResourceManager(ResourcePackType.SERVER_DATA);
-        ResourcePackList<ResourcePackInfo> packList = new ResourcePackList<>(ResourcePackInfo::new);
+        ResourcePackList packList = new ResourcePackList(ResourcePackInfo::new);
 
         packList.addPackFinder(new ModDataPackFinder());
         // add global packs after mods so that they override

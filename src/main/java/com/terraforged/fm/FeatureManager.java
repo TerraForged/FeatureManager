@@ -35,7 +35,6 @@ import com.terraforged.fm.transformer.InjectionPosition;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -69,11 +68,11 @@ public class FeatureManager implements FeatureDecorator {
         return DataManager.of(dir);
     }
 
-    public static FeatureModifiers modifiers(DataManager data, boolean load) {
+    public static FeatureModifiers modifiers(DataManager data, boolean load, GameContext context) {
         if (load) {
-            return FeatureModifierLoader.load(data);
+            return FeatureModifierLoader.load(data, context);
         }
-        return new FeatureModifiers();
+        return new FeatureModifiers(context);
     }
 
     public static void initData(DataManager manager) {
@@ -96,7 +95,7 @@ public class FeatureManager implements FeatureDecorator {
 
         LOG.debug(INIT, " Compiling biome feature lists");
         Map<Biome, BiomeFeatures> biomes = new HashMap<>();
-        for (Biome biome : ForgeRegistries.BIOMES) {
+        for (Biome biome : modifiers.getContext().biomes) {
             BiomeFeatures features = compute(biome, modifiers);
             biomes.put(biome, features);
         }
@@ -111,7 +110,7 @@ public class FeatureManager implements FeatureDecorator {
             // add 'prepend' injectors to the head of the feature list
             builder.add(stage, modifiers.getAppenders(stage, biome, InjectionPosition.HEAD));
 
-            for (ConfiguredFeature<?, ?> feature : biome.getFeatures(stage)) {
+            for (ConfiguredFeature<?, ?> feature : biome.func_242440_e().func_242496_b()) {
                 ModifierSet modifierSet = modifiers.getFeature(stage, biome, feature);
                 builder.add(stage, modifierSet.before);
                 builder.add(stage, modifierSet.feature);

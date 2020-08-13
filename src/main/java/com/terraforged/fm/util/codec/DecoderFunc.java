@@ -8,11 +8,11 @@ import com.mojang.serialization.DynamicOps;
 
 public interface DecoderFunc<V> extends Decoder<V> {
 
-    <T> V _decode(Dynamic<T> dynamic, DynamicOps<T> ops);
+    <T> V _decode(Dynamic<T> dynamic);
 
     default <T> DataResult<Pair<V, T>> decode(DynamicOps<T> ops, T input) {
         try {
-            V v = _decode(new Dynamic<>(ops, input), ops);
+            V v = _decode(new Dynamic<>(ops, input));
             return DataResult.success(Pair.of(v, input));
         } catch (Throwable t) {
             return DataResult.error(t.getMessage());

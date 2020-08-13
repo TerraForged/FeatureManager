@@ -27,6 +27,7 @@ package com.terraforged.fm.modifier;
 
 import com.google.gson.JsonObject;
 import com.terraforged.fm.FeatureManager;
+import com.terraforged.fm.GameContext;
 import com.terraforged.fm.data.DataManager;
 import com.terraforged.fm.matcher.BiomeFeatureMatcher;
 import com.terraforged.fm.matcher.biome.BiomeMatcher;
@@ -48,9 +49,9 @@ public class FeatureModifierLoader {
 
     public static final Marker LOAD = MarkerManager.getMarker("MODIFIERS");
 
-    public static FeatureModifiers load(DataManager data) {
+    public static FeatureModifiers load(DataManager data, GameContext context) {
         FeatureManager.LOG.debug(LOAD, "Loading feature modifier configs");
-        FeatureModifiers modifiers = new FeatureModifiers();
+        FeatureModifiers modifiers = new FeatureModifiers(context);
         data.forEachJson("features", (location, element) -> {
             if (element.isJsonObject()) {
                 if (load(location, element.getAsJsonObject(), modifiers)) {
@@ -64,7 +65,7 @@ public class FeatureModifierLoader {
     }
 
     private static boolean load(ResourceLocation location, JsonObject root, FeatureModifiers modifiers) {
-        Optional<BiomeMatcher> biome = BiomeMatcherParser.parse(root);
+        Optional<BiomeMatcher> biome = BiomeMatcherParser.parse(root, modifiers.getContext());
         if (!biome.isPresent()) {
             FeatureManager.LOG.error(LOAD, "  Invalid BiomeMatcher in: {}", location);
             return false;

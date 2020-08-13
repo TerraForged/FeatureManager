@@ -5,14 +5,14 @@ import com.terraforged.fm.template.Template;
 import com.terraforged.fm.template.decorator.Decorator;
 import com.terraforged.fm.template.decorator.DecoratorConfig;
 import net.minecraft.util.Mirror;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ISeedReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.structure.StructureManager;
 
 import java.util.List;
 import java.util.Random;
@@ -25,20 +25,20 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
     }
 
     @Override
-    public boolean func_230362_a_(ISeedReader world, StructureManager structures, ChunkGenerator generator, Random rand, BlockPos pos, TemplateFeatureConfig config) {
+    public boolean func_241855_a(ISeedReader world, ChunkGenerator generator, Random rand, BlockPos pos, TemplateFeatureConfig config) {
         if (config.type.getPlacement().canPlaceAt(world, pos)) {
             return paste(world, rand, pos, config, config.decorator);
         }
         return false;
     }
 
-    public static  <T extends IWorld> boolean paste(IWorld world, Random rand, BlockPos pos, TemplateFeatureConfig config, DecoratorConfig<T> decorator) {
+    public static  <T extends IWorld> boolean paste(ISeedReader world, Random rand, BlockPos pos, TemplateFeatureConfig config, DecoratorConfig<T> decorator) {
         Mirror mirror = nextMirror(rand);
         Rotation rotation = nextRotation(rand);
         return paste(world, rand, pos, mirror, rotation, config, decorator);
     }
 
-    public static  <T extends IWorld> boolean paste(IWorld world, Random rand, BlockPos pos, Mirror mirror, Rotation rotation, TemplateFeatureConfig config, DecoratorConfig<T> decorator) {
+    public static  <T extends IWorld> boolean paste(ISeedReader world, Random rand, BlockPos pos, Mirror mirror, Rotation rotation, TemplateFeatureConfig config, DecoratorConfig<T> decorator) {
         if (config.templates.isEmpty()) {
             FeatureManager.LOG.warn("Empty template list for config: {}", config.name);
             return false;
@@ -46,8 +46,8 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
         Template template = nextTemplate(config.templates, rand);
         T buffer = decorator.createBuffer(world);
         if (template.paste(buffer, pos, mirror, rotation, config.paste)) {
-            Biome biome = world.getBiome(pos);
-            for (Decorator<T> d : decorator.getDecorators(biome.getRegistryName())) {
+            ResourceLocation biome = world.func_242406_i(pos).map(RegistryKey::getRegistryName).orElse(null);
+            for (Decorator<T> d : decorator.getDecorators(biome)) {
                 d.apply(buffer, rand);
             }
             return true;
@@ -55,7 +55,7 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
         return false;
     }
 
-    public static  <T extends IWorld> boolean pasteChecked(IWorld world, Random rand, BlockPos pos, Mirror mirror, Rotation rotation, TemplateFeatureConfig config, DecoratorConfig<T> decorator) {
+    public static  <T extends IWorld> boolean pasteChecked(ISeedReader world, Random rand, BlockPos pos, Mirror mirror, Rotation rotation, TemplateFeatureConfig config, DecoratorConfig<T> decorator) {
         if (config.templates.isEmpty()) {
             FeatureManager.LOG.warn("Empty template list for config: {}", config.name);
             return false;
@@ -63,8 +63,8 @@ public class TemplateFeature extends Feature<TemplateFeatureConfig> {
         Template template = nextTemplate(config.templates, rand);
         T buffer = decorator.createBuffer(world);
         if (template.pasteWithBoundsCheck(buffer, pos, mirror, rotation, config.paste)) {
-            Biome biome = world.getBiome(pos);
-            for (Decorator<T> d : decorator.getDecorators(biome.getRegistryName())) {
+            ResourceLocation biome = world.func_242406_i(pos).map(RegistryKey::getRegistryName).orElse(null);
+            for (Decorator<T> d : decorator.getDecorators(biome)) {
                 d.apply(buffer, rand);
             }
             return true;

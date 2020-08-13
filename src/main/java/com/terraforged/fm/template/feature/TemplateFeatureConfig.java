@@ -57,7 +57,7 @@ public class TemplateFeatureConfig implements IFeatureConfig {
         )));
     }
 
-    public static <T> TemplateFeatureConfig deserialize(Dynamic<T> dynamic, DynamicOps<T> ops) {
+    public static <T> TemplateFeatureConfig deserialize(Dynamic<T> dynamic) {
         ResourceLocation name = new ResourceLocation(dynamic.get("template").asString(""));
         return TemplateManager.getInstance().getTemplateConfig(name);
     }

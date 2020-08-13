@@ -25,24 +25,24 @@
 
 package com.terraforged.fm.template.decorator;
 
-import com.terraforged.fm.util.delegate.WorldDelegate;
+import com.terraforged.fm.util.delegate.SeedWorldDelegate;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ISeedReader;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class BoundsRecorder extends WorldDelegate<IWorld> {
+public abstract class BoundsRecorder extends SeedWorldDelegate {
 
     private BlockPos.Mutable min = null;
     private BlockPos.Mutable max = null;
     private Set<BlockPos> allPositions = null;
 
-    public BoundsRecorder(IWorld delegate) {
+    public BoundsRecorder(ISeedReader delegate) {
         super(delegate);
     }
 

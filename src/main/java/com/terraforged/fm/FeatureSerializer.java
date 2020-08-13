@@ -41,11 +41,11 @@ public class FeatureSerializer {
     public static final Marker MARKER = MarkerManager.getMarker("Serializer");
 
     public static JsonElement serialize(ConfiguredFeature<?, ?> feature) {
-        return Codecs.encode(ConfiguredFeature.field_236264_b_, feature);
+        return Codecs.encode(ConfiguredFeature.field_242763_a, feature);
     }
 
     public static ConfiguredFeature<?, ?> deserializeUnchecked(JsonElement element) {
-        return Codecs.decode(ConfiguredFeature.field_236264_b_, element).orElseThrow(RuntimeException::new);
+        return Codecs.decode(ConfiguredFeature.field_242763_a, element).orElseThrow(RuntimeException::new);
     }
 
     public static Optional<ConfiguredFeature<?, ?>> deserialize(JsonElement element) {
@@ -56,11 +56,15 @@ public class FeatureSerializer {
         }
     }
 
-    public static <T> Optional<ConfiguredFeature<?, ?>> decode(OptionalDynamic<T> dynamic, DynamicOps<T> ops) {
-        return dynamic.get().result().flatMap(d -> decode(d, ops));
+    public static <T> T encode(ConfiguredFeature<?, ?> feature, DynamicOps<T> ops) {
+        return Codecs.encodeAndGet(ConfiguredFeature.field_242763_a, feature, ops);
     }
 
-    public static <T> Optional<ConfiguredFeature<?, ?>> decode(Dynamic<T> dynamic, DynamicOps<T> ops) {
-        return Codecs.decode(ConfiguredFeature.field_236264_b_, dynamic.getValue(), ops);
+    public static <T> Optional<ConfiguredFeature<?, ?>> decode(OptionalDynamic<T> dynamic) {
+        return dynamic.get().result().flatMap(FeatureSerializer::decode);
+    }
+
+    public static <T> Optional<ConfiguredFeature<?, ?>> decode(Dynamic<T> dynamic) {
+        return Codecs.decode(ConfiguredFeature.field_242763_a, dynamic.getValue(), dynamic.getOps());
     }
 }

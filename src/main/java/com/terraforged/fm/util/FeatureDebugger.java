@@ -6,7 +6,6 @@ import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.MultipleRandomFeatureConfig;
-import net.minecraft.world.gen.feature.MultipleWithChanceRandomFeatureConfig;
 import net.minecraft.world.gen.feature.SingleRandomFeature;
 import net.minecraft.world.gen.feature.TwoFeatureChoiceConfig;
 import net.minecraft.world.gen.placement.ConfiguredPlacement;
@@ -14,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class FeatureDebugger {
 
@@ -48,37 +48,27 @@ public class FeatureDebugger {
             multi((MultipleRandomFeatureConfig) feature.config, errors);
             return;
         }
-
-        if (feature.config instanceof MultipleWithChanceRandomFeatureConfig) {
-            multiChance((MultipleWithChanceRandomFeatureConfig) feature.config, errors);
-        }
     }
 
     private static void decorated(DecoratedFeatureConfig config, List<String> errors) {
-        checkConfiguredFeature(config.feature, errors);
+        checkConfiguredFeature(config.feature.get(), errors);
         checkDecorator(config.decorator, errors);
     }
 
     private static void single(SingleRandomFeature config, List<String> errors) {
-        for (ConfiguredFeature<?, ?> feature : config.features) {
-            checkConfiguredFeature(feature, errors);
+        for (Supplier<ConfiguredFeature<?, ?>> feature : config.features) {
+            checkConfiguredFeature(feature.get(), errors);
         }
     }
 
     private static void twoChoice(TwoFeatureChoiceConfig config, List<String> errors) {
-        checkConfiguredFeature(config.field_227285_a_, errors);
-        checkConfiguredFeature(config.field_227286_b_, errors);
+        checkConfiguredFeature(config.field_227285_a_.get(), errors);
+        checkConfiguredFeature(config.field_227286_b_.get(), errors);
     }
 
     private static void multi(MultipleRandomFeatureConfig config, List<String> errors) {
-        for (ConfiguredRandomFeatureList<?> feature : config.features) {
-            checkConfiguredFeature(feature.feature, errors);
-        }
-    }
-
-    private static void multiChance(MultipleWithChanceRandomFeatureConfig config, List<String> errors) {
-        for (ConfiguredFeature<?, ?> feature : config.features) {
-            checkConfiguredFeature(feature, errors);
+        for (ConfiguredRandomFeatureList feature : config.features) {
+            checkConfiguredFeature(feature.feature.get(), errors);
         }
     }
 
@@ -123,14 +113,15 @@ public class FeatureDebugger {
         }
 
         boolean valid = true;
-        if (decorator.decorator == null) {
-            valid = false;
-            list.add("null placement");
-        } else if (!ForgeRegistries.DECORATORS.containsValue(decorator.decorator)) {
-            list.add("unregistered placement: " + decorator.decorator.getClass().getName());
-        }
+        // no longer exposed
+//        if (decorator.decorator == null) {
+//            valid = false;
+//            list.add("null placement");
+//        } else if (!ForgeRegistries.DECORATORS.containsValue(decorator.decorator)) {
+//            list.add("unregistered placement: " + decorator.decorator.getClass().getName());
+//        }
 
-        if (decorator.config == null) {
+        if (decorator.func_242877_b() == null) {
             valid = false;
             list.add("null decorator config");
         } else {
@@ -138,7 +129,7 @@ public class FeatureDebugger {
 //                decorator.config.serialize(JsonOps.INSTANCE);
             } catch (Throwable t) {
                 valid = false;
-                list.add("placement config: " + decorator.config.getClass().getName() + ", error: " + t.getMessage());
+                list.add("placement config: " + decorator.func_242877_b().getClass().getName() + ", error: " + t.getMessage());
             }
         }
         return valid;

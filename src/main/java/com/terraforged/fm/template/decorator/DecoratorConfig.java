@@ -3,6 +3,7 @@ package com.terraforged.fm.template.decorator;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.ISeedReader;
 import net.minecraft.world.IWorld;
 
 import java.util.ArrayList;
@@ -24,11 +25,14 @@ public class DecoratorConfig<T extends IWorld> {
         this.biomeDecorators = biomeDecorators;
     }
 
-    public T createBuffer(IWorld world) {
+    public T createBuffer(ISeedReader world) {
         return factory.wrap(world);
     }
 
     public List<Decorator<T>> getDecorators(ResourceLocation biome) {
+        if (biome == null) {
+            return defaultDecorator;
+        }
         return biomeDecorators.getOrDefault(biome, defaultDecorator);
     }
 

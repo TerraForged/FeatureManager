@@ -1,9 +1,9 @@
 package com.terraforged.fm.predicate;
 
+import com.terraforged.fm.GameContext;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeContainer;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,13 +33,13 @@ public class BiomePredicate implements FeaturePredicate {
         return true;
     }
 
-    public static BiomePredicate oceans() {
-        return BiomePredicate.of(Biome.Category.OCEAN);
+    public static BiomePredicate oceans(GameContext context) {
+        return BiomePredicate.of(context, Biome.Category.OCEAN);
     }
 
-    public static BiomePredicate of(Biome.Category... categories) {
+    public static BiomePredicate of(GameContext context, Biome.Category... categories) {
         Set<Biome> set = new HashSet<>();
-        for (Biome biome : ForgeRegistries.BIOMES) {
+        for (Biome biome : context.biomes) {
             for (Biome.Category category : categories) {
                 if (biome.getCategory() == category) {
                     set.add(biome);

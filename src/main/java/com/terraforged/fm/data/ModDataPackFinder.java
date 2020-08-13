@@ -16,9 +16,9 @@ import java.util.function.Supplier;
 public class ModDataPackFinder implements IPackFinder {
 
     @Override
-    public <T extends ResourcePackInfo> void func_230230_a_(Consumer<T> consumer, ResourcePackInfo.IFactory<T> factory) {
+    public void func_230230_a_(Consumer<ResourcePackInfo> consumer, ResourcePackInfo.IFactory factory) {
         for (ModFileInfo info : ModList.get().getModFiles()) {
-            T packInfo = ResourcePackInfo.createResourcePack(
+            ResourcePackInfo packInfo = ResourcePackInfo.createResourcePack(
                     info.getFile().getFileName(),
                     true,
                     new ModSupplier(info.getFile()),

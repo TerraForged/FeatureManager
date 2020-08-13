@@ -31,11 +31,11 @@ import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.MultipleRandomFeatureConfig;
-import net.minecraft.world.gen.feature.MultipleWithChanceRandomFeatureConfig;
 import net.minecraft.world.gen.feature.SingleRandomFeature;
 import net.minecraft.world.gen.feature.TwoFeatureChoiceConfig;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class DynamicMatcher implements Predicate<ConfiguredFeature<?, ?>> {
 
@@ -66,20 +66,16 @@ public class DynamicMatcher implements Predicate<ConfiguredFeature<?, ?>> {
             return multi((MultipleRandomFeatureConfig) feature.config);
         }
 
-        if (feature.config instanceof MultipleWithChanceRandomFeatureConfig) {
-            return multiChance((MultipleWithChanceRandomFeatureConfig) feature.config);
-        }
-
         return predicate.test(feature);
     }
 
     private boolean decorated(DecoratedFeatureConfig config) {
-        return test(config.feature);
+        return test(config.feature.get());
     }
 
     private boolean single(SingleRandomFeature config) {
-        for (ConfiguredFeature<?, ?> feature : config.features) {
-            if (test(feature)) {
+        for (Supplier<ConfiguredFeature<?, ?>> feature : config.features) {
+            if (test(feature.get())) {
                 return true;
             }
         }
@@ -87,24 +83,15 @@ public class DynamicMatcher implements Predicate<ConfiguredFeature<?, ?>> {
     }
 
     private boolean twoChoice(TwoFeatureChoiceConfig config) {
-        if (test(config.field_227285_a_)) {
+        if (test(config.field_227285_a_.get())) {
             return true;
         }
-        return test(config.field_227286_b_);
+        return test(config.field_227286_b_.get());
     }
 
     private boolean multi(MultipleRandomFeatureConfig config) {
-        for (ConfiguredRandomFeatureList<?> feature : config.features) {
-            if (test(feature.feature)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean multiChance(MultipleWithChanceRandomFeatureConfig config) {
-        for (ConfiguredFeature<?, ?> feature : config.features) {
-            if (test(feature)) {
+        for (ConfiguredRandomFeatureList feature : config.features) {
+            if (test(feature.feature.get())) {
                 return true;
             }
         }

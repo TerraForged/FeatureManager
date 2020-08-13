@@ -28,6 +28,7 @@ package com.terraforged.fm.modifier;
 import com.google.gson.JsonElement;
 import com.terraforged.fm.FeatureManager;
 import com.terraforged.fm.FeatureSerializer;
+import com.terraforged.fm.GameContext;
 import com.terraforged.fm.biome.BiomeFeature;
 import com.terraforged.fm.matcher.dynamic.DynamicList;
 import com.terraforged.fm.matcher.dynamic.DynamicPredicate;
@@ -56,6 +57,16 @@ public class FeatureModifiers extends Event {
     private final ModifierList<FeatureAppender> appenders = new ModifierList<>();
     private final ModifierList<FeaturePredicate> predicates = new ModifierList<>();
     private final ModifierList<FeatureTransformer> transformers = new ModifierList<>();
+
+    private final GameContext context;
+
+    public GameContext getContext() {
+        return context;
+    }
+
+    public FeatureModifiers(GameContext context) {
+        this.context = context;
+    }
 
     public DynamicList getDynamic() {
         return dynamics;
@@ -110,7 +121,7 @@ public class FeatureModifiers extends Event {
 
             return new ModifierSet(new BiomeFeature(predicate, result), before, after);
         } catch (Throwable t) {
-            String name = biome.getRegistryName() + "";
+            String name = context.biomes.getName(biome);
             List<String> errors = FeatureDebugger.getErrors(feature);
             FeatureManager.LOG.debug(FeatureSerializer.MARKER, "Unable to serialize feature in biome: {}", name);
             if (errors.isEmpty()) {

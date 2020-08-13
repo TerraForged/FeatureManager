@@ -25,7 +25,10 @@
 
 package com.terraforged.fm.biome;
 
+import com.google.common.base.Suppliers;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.feature.structure.Structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,21 +36,35 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class BiomeFeatures {
 
     public static final BiomeFeatures NONE = BiomeFeatures.builder().build();
-    private static final List<BiomeFeature> empty = Collections.emptyList();
 
-    private final Map<GenerationStage.Decoration, List<BiomeFeature>> features;
+    private static final Supplier<List<List<Structure<?>>>> STRUCTURES = Suppliers.memoize(() -> {
+        Map<GenerationStage.Decoration, List<Structure<?>>> map = Registry.STRUCTURE_FEATURE.stream().collect(Collectors.groupingBy(Structure::func_236396_f_));
+        List<List<Structure<?>>> list = new ArrayList<>();
+        for (GenerationStage.Decoration stage : GenerationStage.Decoration.values()) {
+            list.add(map.getOrDefault(stage, Collections.emptyList()));
+        }
+        return list;
+    });
+
+    private final List<List<BiomeFeature>> features;
+    private final List<List<Structure<?>>> structures = STRUCTURES.get();
 
     public BiomeFeatures(Builder builder) {
-        this.features = builder.features;
-        builder.features = Collections.emptyMap();
+        this.features = builder.compile();
     }
 
-    public List<BiomeFeature> getStage(GenerationStage.Decoration stage) {
-        return features.getOrDefault(stage, empty);
+    public List<List<BiomeFeature>> getFeatures() {
+        return features;
+    }
+
+    public List<List<Structure<?>>> getStructures() {
+        return structures;
     }
 
     public static Builder builder() {
@@ -56,6 +73,7 @@ public class BiomeFeatures {
 
     public static class Builder {
 
+        private int size;
         private Map<GenerationStage.Decoration, List<BiomeFeature>> features = Collections.emptyMap();
 
         public Builder add(GenerationStage.Decoration stage, Collection<BiomeFeature> features) {
@@ -70,7 +88,16 @@ public class BiomeFeatures {
                 features = new EnumMap<>(GenerationStage.Decoration.class);
             }
             features.computeIfAbsent(stage, s -> new ArrayList<>()).add(feature);
+            size++;
             return this;
+        }
+
+        private List<List<BiomeFeature>> compile() {
+            List<List<BiomeFeature>> list = new ArrayList<>(size);
+            for (GenerationStage.Decoration stage : GenerationStage.Decoration.values()) {
+                list.add(features.getOrDefault(stage, Collections.emptyList()));
+            }
+            return list;
         }
 
         public BiomeFeatures build() {
